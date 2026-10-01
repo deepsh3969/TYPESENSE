@@ -10,7 +10,8 @@ import {
   weakWords,
 } from './patterns'
 import { generateLearningPlan } from './learningPlan'
-import { analyze, windowDelta } from './summarize'
+import { todayKey } from '@/lib/utils'
+import { analyze, dailySeries, filterSince, keyAccuracyFor, windowDelta } from './summarize'
 
 function errorAt(
   position: number,
@@ -263,5 +264,48 @@ describe('summarize (Phase 15 support)', () => {
     expect(result.summary.sessions).toBe(0)
     expect(result.summary.avgWpm).toBe(0)
     expect(result.topPattern).toBeNull()
+  })
+
+  it('filters sessions by range', () => {
+    const recent = makeSession({ text: 'x', startedAt: `${todayKey()}T10:00:00.000Z` })
+    const old = makeSession({ text: 'x', startedAt: '2020-01-01T10:00:00.000Z' })
+    expect(filterSince([recent, old], 'all')).toHaveLength(2)
+    expect(filterSince([recent, old], 7)).toHaveLength(1)
+    expect(filterSince([recent, old], 7)[0]).toBe(recent)
+    expect(filterSince([recent, old], 30)).toHaveLength(1)
+  })
+
+  it('builds a daily series with nulls for empty days', () => {
+    const points = dailySeries([makeSession({ text: 'x', startedAt: `${todayKey()}T10:00:00.000Z` })], 7)
+    expect(points).toHaveLength(7)
+    const today = points[points.length - 1]
+    expect(today.wpm).toBe(50)
+    expect(today.accuracy).toBe(95)
+    expect(today.errors).toBe(0)
+    expect(points.slice(0, 6).every((p) => p.wpm === null && p.accuracy === null)).toBe(true)
+  })
+
+  it('measures per-key accuracy across sessions', () => {
+    const s = makeSession({
+      text: 'x',
+      keyStats: [
+        { key: 'q', attempts: 10, errors: 2, corrections: 1, totalDelayMs: 0, delaySamples: 0 },
+        { key: 'z', attempts: 4, errors: 0, corrections: 0, totalDelayMs: 0, delaySamples: 0 },
+      ],
+    })
+    const q = keyAccuracyFor([s], 'q')
+    expect(q).toEqual({ attempts: 10, errors: 2, accuracy: 80 })
+    expect(keyAccuracyFor([s], 'z')?.accuracy).toBe(100)
+    expect(keyAccuracyFor([s], 'm')).toBeNull()
+  })
+
+  it('rolls everything into one summary', () => {
+    const s = makeSession({ text: 'hello world' })
+    const { summary } = analyze([s])
+    expect(summary.sessions).toBe(1)
+    expect(summary.totalSeconds).toBe(60)
+    expect(summary.bestWpm).toBe(50)
+    expect(summary.avgAccuracy).toBe(95)
+    expect(Array.isArray(summary.patterns)).toBe(true)
   })
 })

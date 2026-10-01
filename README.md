@@ -24,6 +24,7 @@ npm run dev        # http://localhost:5173
 | `npm run preview`    | Serve the production build locally    |
 | `npm test`           | Run the Vitest suite once             |
 | `npm run test:watch` | Vitest in watch mode                  |
+| `npm run test:coverage` | Coverage report (v8, core modules)  |
 | `npm run typecheck`  | `tsc --noEmit` (strict mode)          |
 
 No environment variables are required — the app runs fully locally by default
@@ -135,11 +136,17 @@ provides the rewrite to `index.html`.
 npm test
 ```
 
+110 tests across 9 files:
+
 - `src/typing/*.test.ts` — engine (23), metric formulas (12), error classes (12)
-- `src/analytics/*.test.ts` — problem keys, patterns, summaries, plan (12)
+- `src/analytics/*.test.ts` — problem keys, patterns, summaries, plan (16)
 - `src/lessons/lessons.test.ts` — unlock chain, stage evaluation, generators (14)
-- `src/gamification/levels.test.ts` — XP thresholds, level bar, session XP (8)
+- `src/gamification/*.test.ts` — XP levels (8), streaks/goals/achievements (17)
 - `src/test/app.smoke.test.tsx` — renders every route incl. lazy chunks (6)
+- `src/test/error-boundary.test.tsx` — crash recovery fallback (2)
+
+`npm run test:coverage` reports ~86% statements / ~90% lines on the core
+modules (`typing`, `analytics`, `lessons`, `gamification`).
 
 ## License
 
