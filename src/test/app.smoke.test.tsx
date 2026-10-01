@@ -24,6 +24,7 @@ describe('app routes', () => {
     renderAt('/app')
     expect(await screen.findByRole('banner', {}, SLOW)).toBeInTheDocument()
     expect(await screen.findByRole('heading', { level: 1, name: /typist/i }, SLOW)).toBeInTheDocument()
+    expect(document.title).toContain('Dashboard')
   })
 
   it('renders the typing test page with a config bar', async () => {

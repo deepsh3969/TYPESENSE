@@ -5,6 +5,7 @@ import { initAuth, useAuthStore } from '@/stores/authStore'
 import { useUserStore } from '@/stores/userStore'
 import { mergeRemoteLessons, mergeRemoteSessions } from '@/services/sync'
 import { AppShell } from '@/layouts/AppShell'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { Landing } from '@/pages/Landing'
 import { AuthPage } from '@/pages/Auth'
 import { NotFound } from '@/pages/NotFound'
@@ -59,31 +60,33 @@ export default function App() {
   }, [authUser])
 
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center bg-bg" role="status" aria-label="Loading">
-          <span className="size-7 animate-spin rounded-full border-[3px] border-line border-t-primary" />
-        </div>
-      }
-    >
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<AuthPage />} />
-        <Route path="/app" element={<AppShell />}>
-          <Route index element={<Dashboard />} />
-          <Route path="test" element={<TypingTest />} />
-          <Route path="practice" element={<Practice />} />
-          <Route path="practice/:mode" element={<PracticeDetail />} />
-          <Route path="lessons" element={<Lessons />} />
-          <Route path="lessons/:id" element={<LessonDetail />} />
-          <Route path="mistakes" element={<Mistakes />} />
-          <Route path="progress" element={<ProgressPage />} />
-          <Route path="achievements" element={<Achievements />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="settings" element={<Settings />} />
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense
+        fallback={
+          <div className="flex min-h-screen items-center justify-center bg-bg" role="status" aria-label="Loading">
+            <span className="size-7 animate-spin rounded-full border-[3px] border-line border-t-primary" />
+          </div>
+        }
+      >
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/app" element={<AppShell />}>
+            <Route index element={<Dashboard />} />
+            <Route path="test" element={<TypingTest />} />
+            <Route path="practice" element={<Practice />} />
+            <Route path="practice/:mode" element={<PracticeDetail />} />
+            <Route path="lessons" element={<Lessons />} />
+            <Route path="lessons/:id" element={<LessonDetail />} />
+            <Route path="mistakes" element={<Mistakes />} />
+            <Route path="progress" element={<ProgressPage />} />
+            <Route path="achievements" element={<Achievements />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   )
 }
