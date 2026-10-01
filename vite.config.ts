@@ -8,6 +8,11 @@ const rootDir = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  // entry chunk (react + router + framer-motion) is ~504 kB / 161 kB gzip;
+  // recharts and the Supabase SDK are split into async chunks
+  build: {
+    chunkSizeWarningLimit: 550,
+  },
   resolve: {
     alias: {
       '@': path.resolve(rootDir, './src'),

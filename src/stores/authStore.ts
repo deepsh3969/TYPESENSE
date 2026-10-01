@@ -19,7 +19,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   initialized: !isSupabaseConfigured,
   setUser: (user) => set({ user, initialized: true }),
   signOut: async () => {
-    const sb = getSupabase()
+    const sb = await getSupabase()
     if (sb) await sb.auth.signOut()
     set({ user: null })
   },
@@ -28,26 +28,27 @@ export const useAuthStore = create<AuthState>((set) => ({
 /**
  * Subscribes to Supabase auth changes. Safe to call when Supabase is not
  * configured — it becomes a no-op and the app stays in local mode.
- * Returns an unsubscribe function.
+ * Returns a promise resolving to an unsubscribe function.
  */
-export function initAuth(): () => void {
-  const sb = getSupabase()
-  if (!sb) return () => undefined
+export function initAuth(): Promise<() => void> {
+  return getSupabase().then((sb) => {
+    if (!sb) return () => undefined
 
-  const applyUser = async () => {
-    const { data } = await sb.auth.getUser()
-    const user = data.user
-    useAuthStore
-      .getState()
-      .setUser(user ? { id: user.id, email: user.email ?? '' } : null)
-  }
-  void applyUser()
+    const applyUser = async () => {
+      const { data } = await sb.auth.getUser()
+      const user = data.user
+      useAuthStore
+        .getState()
+        .setUser(user ? { id: user.id, email: user.email ?? '' } : null)
+    }
+    void applyUser()
 
-  const { data: sub } = sb.auth.onAuthStateChange((_event, session) => {
-    useAuthStore
-      .getState()
-      .setUser(session?.user ? { id: session.user.id, email: session.user.email ?? '' } : null)
+    const { data: sub } = sb.auth.onAuthStateChange((_event, session) => {
+      useAuthStore
+        .getState()
+        .setUser(session?.user ? { id: session.user.id, email: session.user.email ?? '' } : null)
+    })
+
+    return () => sub.subscription.unsubscribe()
   })
-
-  return () => sub.subscription.unsubscribe()
 }

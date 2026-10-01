@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 import { Card, LinkButton } from '@/components/ui'
 import { HeroDemo } from '@/components/landing/HeroDemo'
-import { TrendChart } from '@/components/charts'
+import { Sparkline } from '@/components/charts/Sparkline'
 import type { DailyPoint } from '@/analytics/summarize'
 import { useTheme } from '@/hooks/useTheme'
 import { useSessionsStore } from '@/stores/sessionsStore'
@@ -238,7 +238,7 @@ export function Landing() {
               <h3 className="text-sm font-bold text-ink">Sample improvement curve</h3>
               <span className="text-[11px] font-medium text-ink-faint">sample data</span>
             </div>
-            <TrendChart data={SAMPLE} />
+            <Sparkline data={SAMPLE} />
           </Card>
         </div>
       </section>

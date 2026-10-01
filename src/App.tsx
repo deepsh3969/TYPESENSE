@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { useReducedMotionPref } from '@/hooks/useTheme'
 import { initAuth, useAuthStore } from '@/stores/authStore'
@@ -7,17 +7,24 @@ import { mergeRemoteLessons, mergeRemoteSessions } from '@/services/sync'
 import { AppShell } from '@/layouts/AppShell'
 import { Landing } from '@/pages/Landing'
 import { AuthPage } from '@/pages/Auth'
-import { Dashboard } from '@/pages/Dashboard'
-import { TypingTest } from '@/pages/TypingTest'
-import { PracticeIndex, PracticeDetail } from '@/pages/Practice'
-import { Lessons } from '@/pages/Lessons'
-import { LessonDetail } from '@/pages/LessonDetail'
-import { Mistakes } from '@/pages/Mistakes'
-import { ProgressPage } from '@/pages/Progress'
-import { Achievements } from '@/pages/Achievements'
-import { Profile } from '@/pages/Profile'
-import { Settings } from '@/pages/Settings'
 import { NotFound } from '@/pages/NotFound'
+
+// route-level code splitting keeps the landing + shell initial bundle small
+const Dashboard = lazy(() => import('@/pages/Dashboard').then((m) => ({ default: m.Dashboard })))
+const TypingTest = lazy(() => import('@/pages/TypingTest').then((m) => ({ default: m.TypingTest })))
+const Practice = lazy(() =>
+  import('@/pages/Practice').then((m) => ({ default: m.PracticeIndex })),
+)
+const PracticeDetail = lazy(() =>
+  import('@/pages/Practice').then((m) => ({ default: m.PracticeDetail })),
+)
+const Lessons = lazy(() => import('@/pages/Lessons').then((m) => ({ default: m.Lessons })))
+const LessonDetail = lazy(() => import('@/pages/LessonDetail').then((m) => ({ default: m.LessonDetail })))
+const Mistakes = lazy(() => import('@/pages/Mistakes').then((m) => ({ default: m.Mistakes })))
+const ProgressPage = lazy(() => import('@/pages/Progress').then((m) => ({ default: m.ProgressPage })))
+const Achievements = lazy(() => import('@/pages/Achievements').then((m) => ({ default: m.Achievements })))
+const Profile = lazy(() => import('@/pages/Profile').then((m) => ({ default: m.Profile })))
+const Settings = lazy(() => import('@/pages/Settings').then((m) => ({ default: m.Settings })))
 
 export default function App() {
   useReducedMotionPref()
@@ -26,7 +33,18 @@ export default function App() {
   const setProfile = useUserStore((s) => s.setProfile)
 
   // subscribe to Supabase auth (no-op when unconfigured)
-  useEffect(() => initAuth(), [])
+  useEffect(() => {
+    let unsub = (): void => undefined
+    let cancelled = false
+    void initAuth().then((u) => {
+      if (cancelled) u()
+      else unsub = u
+    })
+    return () => {
+      cancelled = true
+      unsub()
+    }
+  }, [])
 
   // flip profile mode + pull remote data when a session appears / disappears
   useEffect(() => {
@@ -41,23 +59,31 @@ export default function App() {
   }, [authUser])
 
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<AuthPage />} />
-      <Route path="/app" element={<AppShell />}>
-        <Route index element={<Dashboard />} />
-        <Route path="test" element={<TypingTest />} />
-        <Route path="practice" element={<PracticeIndex />} />
-        <Route path="practice/:mode" element={<PracticeDetail />} />
-        <Route path="lessons" element={<Lessons />} />
-        <Route path="lessons/:id" element={<LessonDetail />} />
-        <Route path="mistakes" element={<Mistakes />} />
-        <Route path="progress" element={<ProgressPage />} />
-        <Route path="achievements" element={<Achievements />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="settings" element={<Settings />} />
-      </Route>
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-bg" role="status" aria-label="Loading">
+          <span className="size-7 animate-spin rounded-full border-[3px] border-line border-t-primary" />
+        </div>
+      }
+    >
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/app" element={<AppShell />}>
+          <Route index element={<Dashboard />} />
+          <Route path="test" element={<TypingTest />} />
+          <Route path="practice" element={<Practice />} />
+          <Route path="practice/:mode" element={<PracticeDetail />} />
+          <Route path="lessons" element={<Lessons />} />
+          <Route path="lessons/:id" element={<LessonDetail />} />
+          <Route path="mistakes" element={<Mistakes />} />
+          <Route path="progress" element={<ProgressPage />} />
+          <Route path="achievements" element={<Achievements />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
   )
 }

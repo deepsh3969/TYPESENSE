@@ -19,7 +19,7 @@ function logFailure(what: string, message: string) {
 
 /** Fire-and-forget upload of a finished session. No-op unless signed in. */
 export async function maybeSyncSession(session: TypingSession): Promise<void> {
-  const sb = getSupabase()
+  const sb = await getSupabase()
   const uid = currentUserId()
   if (!sb || !uid) return
   const { error } = await sb.from('sessions').upsert({
@@ -43,7 +43,7 @@ export async function maybeSyncSession(session: TypingSession): Promise<void> {
 
 /** Uploads the local profile after a change. No-op unless signed in. */
 export async function maybeSyncProfile(): Promise<void> {
-  const sb = getSupabase()
+  const sb = await getSupabase()
   const uid = currentUserId()
   if (!sb || !uid) return
   const p = useUserStore.getState().data.profile
@@ -61,7 +61,7 @@ export async function maybeSyncProfile(): Promise<void> {
 
 /** Uploads one lesson-progress row. No-op unless signed in. */
 export async function maybeSyncLessonProgress(progress: LessonProgress): Promise<void> {
-  const sb = getSupabase()
+  const sb = await getSupabase()
   const uid = currentUserId()
   if (!sb || !uid) return
   const { error } = await sb.from('lesson_progress').upsert({
@@ -82,7 +82,7 @@ export async function maybeSyncLessonProgress(progress: LessonProgress): Promise
  * (local wins on id conflicts). Returns the number of merged rows.
  */
 export async function mergeRemoteSessions(): Promise<number> {
-  const sb = getSupabase()
+  const sb = await getSupabase()
   const uid = currentUserId()
   if (!sb || !uid) return 0
   const { data, error } = await sb
@@ -123,7 +123,7 @@ export async function mergeRemoteSessions(): Promise<number> {
 
 /** Pulls remote lesson progress for rows the local store has not completed. */
 export async function mergeRemoteLessons(): Promise<void> {
-  const sb = getSupabase()
+  const sb = await getSupabase()
   const uid = currentUserId()
   if (!sb || !uid) return
   const { data, error } = await sb.from('lesson_progress').select('*')

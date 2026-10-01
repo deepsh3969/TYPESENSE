@@ -11,33 +11,36 @@ function renderAt(path: string) {
   )
 }
 
+// lazy routes resolve after on-demand transform (recharts is heavy) in vitest
+const SLOW = { timeout: 15000 }
+
 describe('app routes', () => {
   it('renders the landing page', () => {
     renderAt('/')
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/type faster/i)
   })
 
-  it('renders the dashboard shell', () => {
+  it('renders the dashboard shell', async () => {
     renderAt('/app')
-    expect(screen.getByRole('banner')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 1, name: /typist/i })).toBeInTheDocument()
+    expect(await screen.findByRole('banner', {}, SLOW)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: /typist/i }, SLOW)).toBeInTheDocument()
   })
 
-  it('renders the typing test page with a config bar', () => {
+  it('renders the typing test page with a config bar', async () => {
     renderAt('/app/test')
-    expect(screen.getByRole('heading', { name: 'Typing Test' })).toBeInTheDocument()
-    expect(screen.getByRole('radiogroup', { name: 'Test mode' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Typing Test' }, SLOW)).toBeInTheDocument()
+    expect(await screen.findByRole('radiogroup', { name: 'Test mode' }, SLOW)).toBeInTheDocument()
   })
 
-  it('renders the practice index', () => {
+  it('renders the practice index', async () => {
     renderAt('/app/practice')
-    expect(screen.getByRole('heading', { name: 'Practice', level: 1 })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Practice', level: 1 }, SLOW)).toBeInTheDocument()
     expect(screen.getAllByText('Problem Keys').length).toBeGreaterThan(0)
   })
 
-  it('renders lessons', () => {
+  it('renders lessons', async () => {
     renderAt('/app/lessons')
-    expect(screen.getByRole('heading', { name: 'Lessons', level: 1 })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Lessons', level: 1 }, SLOW)).toBeInTheDocument()
     expect(screen.getAllByText(/Home Row/).length).toBeGreaterThan(0)
   })
 

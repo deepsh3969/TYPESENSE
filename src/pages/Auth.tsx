@@ -10,7 +10,7 @@ export function AuthPage() {
 
   const sendLink = async (e: FormEvent) => {
     e.preventDefault()
-    const sb = getSupabase()
+    const sb = await getSupabase()
     if (!sb) return
     setStatus('sending')
     setError('')
@@ -27,7 +27,7 @@ export function AuthPage() {
   }
 
   const signInWithGoogle = async () => {
-    const sb = getSupabase()
+    const sb = await getSupabase()
     if (!sb) return
     const { error: err } = await sb.auth.signInWithOAuth({
       provider: 'google',
