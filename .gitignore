@@ -10,7 +10,17 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+build
 *.local
+
+# Environment files — never commit secrets
+.env
+.env.*
+!.env.example
+
+# Vercel / Vite caches
+.vercel
+.vite
 
 # Editor directories and files
 .vscode/*
