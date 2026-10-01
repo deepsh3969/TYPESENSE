@@ -123,7 +123,13 @@ function KeyCap({
 
   if (onKeyClick && !isSpace) {
     return (
-      <button type="button" style={style} className={classes} onClick={() => onKeyClick(keyDef.id)}>
+      <button
+        type="button"
+        style={style}
+        className={classes}
+        aria-label={keyDef.label}
+        onClick={() => onKeyClick(keyDef.id)}
+      >
         {content}
       </button>
     )

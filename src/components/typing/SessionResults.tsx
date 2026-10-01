@@ -41,6 +41,10 @@ export function SessionResults({
       transition={{ duration: 0.3 }}
       className="space-y-4"
     >
+      <p role="status" className="sr-only">
+        {title}. {Math.round(m.wpm)} words per minute, {m.accuracy.toFixed(1)} percent accuracy,{' '}
+        {m.errors} errors.
+      </p>
       {/* header + rewards */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>

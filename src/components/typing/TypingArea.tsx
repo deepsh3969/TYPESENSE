@@ -113,6 +113,8 @@ export function TypingArea({ slots, index, text, running, finished, className }:
 
   return (
     <div
+      role="group"
+      aria-label="Typing area"
       className={cn(
         'relative rounded-2xl border border-line bg-surface px-4 py-5 sm:px-6',
         finished && 'border-line',
@@ -122,7 +124,7 @@ export function TypingArea({ slots, index, text, running, finished, className }:
       <div
         ref={scrollRef}
         className="scrollbar-thin relative max-h-[168px] overflow-y-auto font-mono text-[19px] leading-[1.9] sm:text-[21px] sm:leading-[2]"
-        aria-label="Typing text"
+        aria-label="Text to type"
       >
         <div className="flex flex-wrap">
           {words.map((w, wi) => (
@@ -140,7 +142,10 @@ export function TypingArea({ slots, index, text, running, finished, className }:
       </div>
       {!running && !finished && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-2xl bg-surface/70 backdrop-blur-[2px]">
-          <span className="rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary">
+          <span
+            role="status"
+            className="rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary"
+          >
             Start typing to begin
           </span>
         </div>

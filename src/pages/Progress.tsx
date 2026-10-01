@@ -122,14 +122,14 @@ export function ProgressPage() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-line text-[11px] uppercase tracking-wider text-ink-faint">
-                <th className="px-4 py-2.5 font-semibold">When</th>
-                <th className="px-4 py-2.5 font-semibold">Mode</th>
-                <th className="px-4 py-2.5 font-semibold text-right">WPM</th>
-                <th className="px-4 py-2.5 font-semibold text-right">Acc</th>
-                <th className="px-4 py-2.5 font-semibold text-right">Rhythm</th>
-                <th className="px-4 py-2.5 font-semibold text-right">Errors</th>
-                <th className="px-4 py-2.5 font-semibold text-right">Time</th>
-                <th className="px-4 py-2.5" aria-label="Actions" />
+                <th scope="col" className="px-4 py-2.5 font-semibold">When</th>
+                <th scope="col" className="px-4 py-2.5 font-semibold">Mode</th>
+                <th scope="col" className="px-4 py-2.5 font-semibold text-right">WPM</th>
+                <th scope="col" className="px-4 py-2.5 font-semibold text-right">Acc</th>
+                <th scope="col" className="px-4 py-2.5 font-semibold text-right">Rhythm</th>
+                <th scope="col" className="px-4 py-2.5 font-semibold text-right">Errors</th>
+                <th scope="col" className="px-4 py-2.5 font-semibold text-right">Time</th>
+                <th scope="col" className="px-4 py-2.5" aria-label="Actions" />
               </tr>
             </thead>
             <tbody>

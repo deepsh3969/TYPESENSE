@@ -95,6 +95,12 @@ export function Landing() {
 
   return (
     <div className="min-h-screen bg-bg text-ink">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+      >
+        Skip to content
+      </a>
       {/* header */}
       <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
@@ -120,6 +126,7 @@ export function Landing() {
         </div>
       </header>
 
+      <main id="main">
       {/* hero */}
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(79,70,229,0.12),transparent_55%)]" />
@@ -259,6 +266,8 @@ export function Landing() {
           </div>
         </div>
       </section>
+
+      </main>
 
       {/* footer */}
       <footer className="border-t border-line">
