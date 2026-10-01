@@ -120,6 +120,14 @@ describe('evaluateAchievements', () => {
     expect(unlocked).not.toContain('wpm-80')
   })
 
+  it('unlocks accuracy badges from ratio values (0..1 contract)', () => {
+    expect(ids(evaluateAchievements(ctx({ testsTaken: 1, bestAccuracy: 0.95 }), []))).toContain('acc-95')
+    expect(ids(evaluateAchievements(ctx({ testsTaken: 1, bestAccuracy: 1 }), []))).toContain('acc-100')
+    // 94.9% stays locked — and legacy 95-style numbers never count
+    expect(ids(evaluateAchievements(ctx({ testsTaken: 1, bestAccuracy: 0.949 }), []))).not.toContain('acc-95')
+    expect(ids(evaluateAchievements(ctx({ testsTaken: 1, bestAccuracy: 0.9 }), []))).not.toContain('acc-95')
+  })
+
   it('never re-awards an achievement the user already owns', () => {
     expect(evaluateAchievements(ctx({ testsTaken: 1 }), [{ id: 'first-test' }])).toEqual([])
   })

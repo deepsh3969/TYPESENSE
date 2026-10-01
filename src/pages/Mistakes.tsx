@@ -3,6 +3,7 @@ import { Bug, KeyRound, Target } from 'lucide-react'
 import { Card, EmptyState, LinkButton, Pill, Tabs } from '@/components/ui'
 import { Keyboard } from '@/components/keyboard/Keyboard'
 import { useAnalytics } from '@/hooks/useAnalytics'
+import { accuracyToPercent, formatAccuracy } from '@/lib/accuracy'
 import { cn } from '@/lib/utils'
 import type { ErrorCategory } from '@/types/typing'
 
@@ -54,7 +55,7 @@ export function Mistakes() {
 
   const heat = useMemo(() => {
     const map = new Map<string, number>()
-    for (const k of summary.problemKeys) map.set(k.key, k.accuracy * 100)
+    for (const k of summary.problemKeys) map.set(k.key, k.accuracy)
     return map
   }, [summary.problemKeys])
 
@@ -93,10 +94,10 @@ export function Mistakes() {
                   <div className="mt-2 h-1.5 overflow-hidden bg-surface-2">
                     <div
                       className={cn('h-full', k.score < 88 ? 'bg-danger' : k.score < 94 ? 'bg-warning' : 'bg-success')}
-                      style={{ width: `${Math.max(4, Math.round(k.accuracy * 100))}%` }}
+                      style={{ width: `${Math.max(4, accuracyToPercent(k.accuracy, 0))}%` }}
                     />
                   </div>
-                  <p className="mt-1.5 text-sm font-bold text-ink">{Math.round(k.accuracy * 100)}% accuracy</p>
+                  <p className="mt-1.5 text-sm font-bold text-ink">{formatAccuracy(k.accuracy)} accuracy</p>
                 </div>
               </Card>
             ))}
@@ -117,8 +118,8 @@ export function Mistakes() {
               <Card key={w.word} className="p-4">
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-lg font-bold text-ink">{w.word}</span>
-                  <Pill className={cn(w.accuracy < 90 ? 'bg-danger/10 text-danger' : 'bg-warning/10 text-warning')}>
-                    {Math.round(w.accuracy * 100)}%
+                  <Pill className={cn(w.accuracy < 0.9 ? 'bg-danger/10 text-danger' : 'bg-warning/10 text-warning')}>
+                    {formatAccuracy(w.accuracy, 1)}
                   </Pill>
                 </div>
                 <p className="mt-2 text-xs text-ink-muted">
@@ -153,7 +154,7 @@ export function Mistakes() {
                 <div className="flex items-center gap-2">
                   <Pill className="bg-primary/10 text-primary">{p.kind}</Pill>
                   <span className="text-xs text-ink-muted">
-                    {p.errors}/{p.attempts} broken · {Math.round(p.accuracy * 100)}% · {Math.round(p.confidence * 100)}% confidence
+                    {p.errors}/{p.attempts} broken · {formatAccuracy(p.accuracy, 1)} · {Math.round(p.confidence * 100)}% confidence
                   </span>
                 </div>
                 <p className="mt-1 text-sm text-ink-muted">{p.recommendation}</p>
@@ -197,7 +198,7 @@ export function Mistakes() {
                     <div className="h-full bg-primary" style={{ width: `${Math.max(2, share)}%` }} />
                   </div>
                   <p className="mt-1.5 text-[11px] text-ink-faint">
-                    {Math.round((v.corrected / v.count) * 100)}% caught and fixed by you
+                    {accuracyToPercent(v.corrected / v.count, 0)}% caught and fixed by you
                   </p>
                 </Card>
               )

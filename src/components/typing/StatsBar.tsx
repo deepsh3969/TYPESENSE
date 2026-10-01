@@ -1,4 +1,5 @@
 import { Target, Timer, Zap, Gauge, AlertCircle } from 'lucide-react'
+import { accuracyToPercent } from '@/lib/accuracy'
 import type { LiveSnapshot } from '@/hooks/useTypingSession'
 import { cn } from '@/lib/utils'
 import { Progress } from '@/components/ui'
@@ -32,10 +33,10 @@ export function StatsBar({ live, progressLabel, className }: StatsBarProps) {
       <StatTile label="WPM" value={live.wpm} icon={<Zap className="size-3.5" />} big />
       <StatTile
         label="Accuracy"
-        value={live.accuracy.toFixed(1)}
-        suffix="%"
+        value={live.attempts > 0 ? accuracyToPercent(live.accuracy, 1) : '—'}
+        suffix={live.attempts > 0 ? '%' : undefined}
         icon={<Target className="size-3.5" />}
-        tone={live.accuracy < 95 ? 'danger' : 'default'}
+        tone={live.attempts > 0 && live.accuracy < 0.95 ? 'danger' : 'default'}
       />
       <StatTile
         label="Errors"

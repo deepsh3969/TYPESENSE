@@ -64,7 +64,7 @@ const STEPS = [
 const SAMPLE: DailyPoint[] = Array.from({ length: 14 }, (_, i) => ({
   date: `2026-09-${String(i + 10).padStart(2, '0')}`,
   wpm: Math.round(44 + i * 1.6 + Math.sin(i * 1.4) * 4),
-  accuracy: Math.round((93 + i * 0.42 + Math.cos(i) * 1.1) * 10) / 10,
+  accuracy: Math.round((0.93 + i * 0.0042 + Math.cos(i) * 0.011) * 10000) / 10000,
   minutes: 6 + (i % 5) * 3,
   errors: Math.max(1, 9 - Math.floor(i / 2)),
 }))

@@ -82,6 +82,7 @@ export interface WpmSample {
   /** seconds elapsed */
   t: number
   wpm: number
+  /** ratio 0..1 */
   accuracy: number
 }
 
@@ -93,7 +94,7 @@ export interface SessionMetrics {
   grossWpm: number
   netWpm: number
   cpm: number
-  /** first-attempt keystroke accuracy, 0..100 */
+  /** first-attempt keystroke accuracy, RATIO 0..1 (display with @/lib/accuracy) */
   accuracy: number
   errors: number
   uncorrectedErrors: number
@@ -103,6 +104,7 @@ export interface SessionMetrics {
   missedChars: number
   backspaces: number
   corrections: number
+  /** corrections / (corrections + uncorrectedErrors), RATIO 0..1 (separate metric from accuracy) */
   correctionRate: number
   /** mean ms between keystrokes, excluding pauses > 1200ms */
   avgKeyDelayMs: number
@@ -112,7 +114,7 @@ export interface SessionMetrics {
   avgPauseMs: number
   /** 0..100, inverse coefficient of variation of key delays */
   consistency: number
-  /** accuracy of the final (uncorrected) text vs target */
+  /** accuracy of the final (uncorrected) text vs target, RATIO 0..1 */
   finalAccuracy: number
 }
 

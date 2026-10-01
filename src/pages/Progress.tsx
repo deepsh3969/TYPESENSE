@@ -3,6 +3,7 @@ import { Download, LineChart, Trash2 } from 'lucide-react'
 import { Button, Card, Dialog, EmptyState, LinkButton, SegmentedControl, StatCard } from '@/components/ui'
 import { MinutesBars, TrendChart } from '@/components/charts'
 import { useAnalytics, type RangeDays } from '@/hooks/useAnalytics'
+import { accuracyToPercent, formatAccuracy } from '@/lib/accuracy'
 import { dailySeries } from '@/analytics/summarize'
 import { useSessionsStore } from '@/stores/sessionsStore'
 import { cn, formatDuration } from '@/lib/utils'
@@ -86,8 +87,8 @@ export function ProgressPage() {
         <StatCard label="Best WPM" value={summary.bestWpm} tone="warning" />
         <StatCard
           label="Accuracy"
-          value={summary.avgAccuracy}
-          unit="%"
+          value={summary.sessions > 0 ? accuracyToPercent(summary.avgAccuracy, 1) : '—'}
+          unit={summary.sessions > 0 ? '%' : undefined}
           delta={summary.accuracyDelta}
           deltaLabel=" pts"
           tone="success"
@@ -149,7 +150,7 @@ export function ProgressPage() {
                     </span>
                   </td>
                   <td className="px-4 py-2.5 text-right font-bold text-ink">{s.metrics.wpm}</td>
-                  <td className="px-4 py-2.5 text-right text-ink-muted">{s.metrics.accuracy}%</td>
+                  <td className="px-4 py-2.5 text-right text-ink-muted">{formatAccuracy(s.metrics.accuracy, 1)}</td>
                   <td className="px-4 py-2.5 text-right text-ink-muted">{s.metrics.consistency}%</td>
                   <td className="px-4 py-2.5 text-right text-ink-muted">{s.metrics.errors}</td>
                   <td className="px-4 py-2.5 text-right text-ink-muted">

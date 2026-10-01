@@ -1,3 +1,4 @@
+import { accuracyToPercent, calculateAccuracy, calculateErrorRate, roundAccuracy } from '@/lib/accuracy'
 import type { ProblemKey, KeyStatus } from '@/types/analytics'
 import type { SessionLike } from './types'
 
@@ -41,10 +42,14 @@ export function confidenceFor(attempts: number): number {
   return 1 - Math.exp(-attempts / 50)
 }
 
+/**
+ * Key status from accuracy — accepts the canonical RATIO 0..1.
+ *   < 0.80 critical · < 0.92 needs-practice · < 0.97 good · else strong
+ */
 export function statusFor(accuracy: number): KeyStatus {
-  if (accuracy < 80) return 'critical'
-  if (accuracy < 92) return 'needs-practice'
-  if (accuracy < 97) return 'good'
+  if (accuracy < 0.8) return 'critical'
+  if (accuracy < 0.92) return 'needs-practice'
+  if (accuracy < 0.97) return 'good'
   return 'strong'
 }
 
@@ -52,9 +57,9 @@ export function statusFor(accuracy: number): KeyStatus {
  * Problem-key scoring (Phase 7).
  *
  * Keys are ranked by *normalised health*, never by raw error counts:
- *   accuracy  = 1 − errors / attempts
+ *   accuracy  = 1 − errors / attempts                (RATIO 0..1, calculateAccuracy)
  *   speedLoad = clamp((avgDelay − 250ms) / 400, 0, 1) × 8   (hesitation penalty)
- *   score     = accuracy% − speedLoad                        (0..100, higher = healthier)
+ *   score     = accuracy% − speedLoad                (0..100, higher = healthier)
  *
  * A key pressed 500× with 30 errors (94%) therefore stays healthier than a key
  * pressed 20× with 8 errors (60%). Confidence (evidence) is reported separately
@@ -66,22 +71,22 @@ export function computeProblemKeys(sessions: readonly SessionLike[]): ProblemKey
 
   for (const agg of aggregated.values()) {
     if (agg.attempts <= 0) continue
-    const accuracy = 1 - agg.errors / agg.attempts
+    const accuracy = calculateAccuracy(agg.attempts, agg.errors)
     const avgResponseMs = agg.delaySamples > 0 ? agg.totalDelayMs / agg.delaySamples : 0
     const speedLoad =
       avgResponseMs > 0 ? Math.min(1, Math.max(0, (avgResponseMs - 250) / 400)) * 8 : 0
-    const score = Math.max(0, Math.min(100, accuracy * 100 - speedLoad))
+    const score = Math.max(0, Math.min(100, accuracyToPercent(accuracy) - speedLoad))
     keys.push({
       key: agg.key,
       attempts: agg.attempts,
       errors: agg.errors,
       corrections: agg.corrections,
-      accuracy: Math.round(accuracy * 1000) / 10,
-      errorRate: Math.round((agg.errors / agg.attempts) * 1000) / 10,
+      accuracy: roundAccuracy(accuracy),
+      errorRate: roundAccuracy(calculateErrorRate(agg.attempts, agg.errors)),
       avgResponseMs: Math.round(avgResponseMs),
       confidence: Math.round(confidenceFor(agg.attempts) * 100) / 100,
       score: Math.round(score * 10) / 10,
-      status: statusFor(accuracy * 100),
+      status: statusFor(accuracy),
     })
   }
 

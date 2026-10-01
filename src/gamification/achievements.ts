@@ -3,7 +3,9 @@ import type { Achievement, AchievementId, AchievementTier } from '@/types/gamifi
 export interface AchievementContext {
   testsTaken: number
   bestWpm: number
+  /** best session accuracy, RATIO 0..1 */
   bestAccuracy: number
+  /** 0..100 */
   bestConsistency: number
   totalMinutes: number
   streakCurrent: number
@@ -76,7 +78,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     tier: 'silver',
     xp: 60,
     icon: 'target',
-    check: (c) => c.bestAccuracy >= 95,
+    check: (c) => c.bestAccuracy >= 0.95,
   },
   {
     id: 'acc-100',
@@ -85,7 +87,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     tier: 'gold',
     xp: 150,
     icon: 'sparkles',
-    check: (c) => c.bestAccuracy >= 100,
+    check: (c) => c.bestAccuracy >= 1,
   },
   {
     id: 'streak-3',

@@ -1,3 +1,4 @@
+import { accuracyToPercent } from '@/lib/accuracy'
 import type { DailyPoint } from '@/analytics/summarize'
 
 /**
@@ -80,8 +81,8 @@ export function Sparkline({ data, height = 200 }: { data: DailyPoint[]; height?:
           <span className="inline-block size-2 rounded-full bg-primary" /> WPM {minWpm}–{maxWpm}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block size-2 rounded-full bg-success" /> Accuracy {Math.round(minAcc)}–
-          {Math.round(maxAcc)}%
+          <span className="inline-block size-2 rounded-full bg-success" /> Accuracy {accuracyToPercent(minAcc, 0)}–
+          {accuracyToPercent(maxAcc, 0)}%
         </span>
         <span>{pts.length} days</span>
       </figcaption>

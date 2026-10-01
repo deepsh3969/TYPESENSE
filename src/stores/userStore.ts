@@ -5,6 +5,7 @@ import type { AchievementId, XpSource } from '@/types/gamification'
 import type { TypingSession } from '@/types/typing'
 import type { LessonResult } from '@/types/lesson'
 import { createId } from '@/lib/id'
+import { toAccuracyRatio } from '@/lib/accuracy'
 import { todayKey } from '@/lib/utils'
 import { levelFromXp, sessionXp, XP_REWARDS } from '@/gamification/levels'
 import { applyActivity } from '@/gamification/streaks'
@@ -154,7 +155,8 @@ export const useUserStore = create<UserStore>()(
         if (session.source === 'test') stats.testsTaken += 1
         stats.bestWpm = Math.max(stats.bestWpm, m.netWpm)
         stats.bestAccuracy = Math.max(stats.bestAccuracy, m.accuracy)
-        stats.bestConsistency = Math.max(stats.bestConsistency, Math.round(m.consistency * 100))
+        // m.consistency is already 0..100 — never multiply it again
+        stats.bestConsistency = Math.max(stats.bestConsistency, Math.round(m.consistency))
         const n = stats.testsTaken
         if (n > 0 && session.source === 'test') {
           stats.avgWpm = prev.stats.avgWpm + (m.netWpm - prev.stats.avgWpm) / n
@@ -247,13 +249,21 @@ export const useUserStore = create<UserStore>()(
       merge: (persisted, current) => {
         const p = persisted as Partial<UserStore> | undefined
         if (!p?.data) return current
+        const stats = { ...current.data.stats, ...p.data.stats }
+        // Accuracy contract migration: ratios 0..1 (idempotent for canonical data).
+        stats.avgAccuracy = toAccuracyRatio(stats.avgAccuracy)
+        stats.bestAccuracy = toAccuracyRatio(stats.bestAccuracy)
+        // bestConsistency is 0..100; older builds stored it ×100 too large.
+        if (Number.isFinite(stats.bestConsistency) && stats.bestConsistency > 100) {
+          stats.bestConsistency = Math.min(100, Math.round(stats.bestConsistency / 100))
+        }
         return {
           ...current,
           data: {
             ...current.data,
             ...p.data,
             profile: { ...current.data.profile, ...p.data.profile },
-            stats: { ...current.data.stats, ...p.data.stats },
+            stats,
             streak: { ...current.data.streak, ...p.data.streak },
             dailyGoal: { ...current.data.dailyGoal, ...p.data.dailyGoal },
           },

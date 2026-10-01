@@ -1,3 +1,4 @@
+import { calculateAccuracy, roundAccuracy } from '@/lib/accuracy'
 import type { ProblemPattern, WordStat } from '@/types/analytics'
 import type { ErrorCategory, SessionLike, TypingError } from '@/types/typing'
 import { physicalKey } from '@/typing/engine'
@@ -101,7 +102,7 @@ export function analyzeWords(sessions: readonly SessionLike[]): WordStat[] {
       word,
       attempts: st.attempts,
       errors: st.errors,
-      accuracy: st.attempts > 0 ? Math.round((1 - st.errors / st.attempts) * 1000) / 10 : 100,
+      accuracy: roundAccuracy(calculateAccuracy(st.attempts, st.errors)),
       // mean duration of mistyped keystrokes inside this word (0 = never mistyped)
       avgTimeMs: t && t.count > 0 ? Math.round(t.sum / t.count) : 0,
     })
@@ -110,9 +111,9 @@ export function analyzeWords(sessions: readonly SessionLike[]): WordStat[] {
   return out
 }
 
-/** Words worth practising: enough evidence, meaningful failure rate. */
+/** Words worth practising: enough evidence, meaningful failure rate (accuracy < 92%). */
 export function weakWords(words: readonly WordStat[], limit = 8): WordStat[] {
-  return words.filter((w) => w.attempts >= 2 && w.errors >= 1 && w.accuracy < 92).slice(0, limit)
+  return words.filter((w) => w.attempts >= 2 && w.errors >= 1 && w.accuracy < 0.92).slice(0, limit)
 }
 
 // ------------------------------------------------------------------ n-grams
@@ -160,7 +161,7 @@ export function analyzeNgrams(sessions: readonly SessionLike[], size: 2 | 3): Pr
   const patterns: ProblemPattern[] = []
   for (const [gram, st] of stats) {
     if (st.attempts < 4 || st.broken === 0) continue
-    const accuracy = Math.round((1 - st.broken / st.attempts) * 1000) / 10
+    const accuracy = roundAccuracy(calculateAccuracy(st.attempts, st.broken))
     patterns.push({
       id: `${size === 2 ? 'bigram' : 'trigram'}:${gram}`,
       kind: size === 2 ? 'bigram' : 'trigram',
@@ -210,7 +211,7 @@ export function analyzeSubstitutions(
   for (const [key, g] of groups) {
     const attempts = keyAttempts.get(physicalKey(g.expected)) ?? 0
     if (g.errors.length < 2 || attempts < 6) continue
-    const accuracy = Math.max(0, Math.round((1 - g.errors.length / attempts) * 1000) / 10)
+    const accuracy = roundAccuracy(calculateAccuracy(attempts, g.errors.length))
     patterns.push({
       id: `substitution:${key}`,
       kind: 'substitution',
@@ -261,7 +262,7 @@ export function analyzeTranspositions(sessions: readonly SessionLike[]): Problem
   for (const [pair, g] of groups) {
     const attempts = occurrences.get(pair) ?? 0
     if (attempts < 4) continue
-    const accuracy = Math.max(0, Math.round((1 - g.errors.length / attempts) * 1000) / 10)
+    const accuracy = roundAccuracy(calculateAccuracy(attempts, g.errors.length))
     patterns.push({
       id: `transposition:${pair}`,
       kind: 'transposition',
@@ -316,7 +317,7 @@ function analyzeAffix(
   const patterns: ProblemPattern[] = []
   for (const [affix, st] of stats) {
     if (st.attempts < 5 || st.broken === 0) continue
-    const accuracy = Math.round((1 - st.broken / st.attempts) * 1000) / 10
+    const accuracy = roundAccuracy(calculateAccuracy(st.attempts, st.broken))
     patterns.push({
       id: `${kind}:${affix}`,
       kind,
@@ -375,7 +376,7 @@ export function biggestPattern(analysis: PatternAnalysis): ProblemPattern | null
   let best = candidates[0]
   let bestRisk = -1
   for (const p of candidates) {
-    const risk = (1 - p.accuracy / 100) * p.confidence * Math.log2(1 + p.errors)
+    const risk = (1 - p.accuracy) * p.confidence * Math.log2(1 + p.errors)
     if (risk > bestRisk) {
       bestRisk = risk
       best = p

@@ -1,3 +1,4 @@
+import { calculateAccuracy, calculateCorrectionRate, roundAccuracy } from '@/lib/accuracy'
 import { clamp } from '@/lib/utils'
 import type { SessionMetrics } from '@/types/typing'
 
@@ -14,13 +15,17 @@ import type { SessionMetrics } from '@/types/typing'
  *                 (classic penalty formula: errors cost one word each, per minute)
  *  CPM          = Gross WPM × 5
  *
- *  Accuracy     = correctKeystrokes / allPrintableKeystrokes × 100
+ *  Accuracy     = correctKeystrokes / allPrintableKeystrokes      ← RATIO 0–1
  *                 (first-attempt keystroke accuracy — every press counts,
  *                  including presses that were later fixed)
- *  FinalAcc     = correctSlots / filledSlots × 100
+ *  FinalAcc     = correctSlots / filledSlots                      ← RATIO 0–1
  *                 (how much of the produced text matches the target)
- *  CorrectionRate = corrections / (corrections + uncorrectedErrors) × 100
- *                 (share of mistakes you actually cleaned up)
+ *  CorrectionRate = corrections / (corrections + uncorrectedErrors) ← RATIO 0–1
+ *                 (share of mistakes you actually cleaned up — 0 with no mistakes)
+ *
+ *  Accuracies are stored as ratios (1 = 100%); `@/lib/accuracy` performs the
+ *  single ×100 conversion at display time. Consistency is a separate metric
+ *  stored 0–100. "Error rate" = 1 − accuracy, also a ratio.
  *
  *  Consistency  = clamp(1 − (stdev(keyDelays) / mean(keyDelays)), 0, 1)
  *                 keyDelays exclude pauses > pauseThresholdMs
@@ -66,9 +71,10 @@ export function computeNetWpm(grossWpm: number, uncorrectedErrors: number, elaps
   return Math.max(0, grossWpm - uncorrectedErrors / elapsedMinutes(elapsedMs))
 }
 
+/** Keystroke accuracy as a ratio in [0, 1]; 0 when nothing was typed. */
 export function computeAccuracy(correctKeystrokes: number, totalKeystrokes: number): number {
-  if (totalKeystrokes <= 0) return 100
-  return (correctKeystrokes / totalKeystrokes) * 100
+  if (totalKeystrokes <= 0) return 0
+  return calculateAccuracy(totalKeystrokes, Math.max(0, totalKeystrokes - correctKeystrokes))
 }
 
 export function computeConsistency(delays: number[]): number {
@@ -90,6 +96,7 @@ export interface LiveMetrics {
   wpm: number
   grossWpm: number
   netWpm: number
+  /** ratio 0–1 (0 before the first keystroke) */
   accuracy: number
   consistency: number
 }
@@ -109,8 +116,6 @@ export function computeLiveMetrics(counters: LiveCounters, timing: TimingData, e
 export function computeMetrics(counters: LiveCounters, timing: TimingData, elapsedMs: number): SessionMetrics {
   const grossWpm = computeGrossWpm(counters.totalKeystrokes, elapsedMs)
   const accuracy = computeAccuracy(counters.correctKeystrokes, counters.totalKeystrokes)
-  const finalAccuracy =
-    counters.filledSlots > 0 ? (counters.correctSlots / counters.filledSlots) * 100 : 100
   const activeDelays = timing.delays.filter((d) => d > 0)
 
   return {
@@ -118,8 +123,11 @@ export function computeMetrics(counters: LiveCounters, timing: TimingData, elaps
     grossWpm: round1(grossWpm),
     netWpm: round1(computeNetWpm(grossWpm, counters.uncorrectedErrors, elapsedMs)),
     wpm: round1(computeWpm(counters.correctSlots, elapsedMs)),
-    accuracy: round1(accuracy),
-    finalAccuracy: round1(finalAccuracy),
+    accuracy: roundAccuracy(accuracy),
+    finalAccuracy:
+      counters.filledSlots > 0
+        ? roundAccuracy(counters.correctSlots / counters.filledSlots)
+        : 0,
     errors: 0, // filled by the engine (slow records excluded)
     uncorrectedErrors: counters.uncorrectedErrors,
     correctChars: counters.correctSlots,
@@ -129,10 +137,8 @@ export function computeMetrics(counters: LiveCounters, timing: TimingData, elaps
     cpm: round1(grossWpm * 5),
     backspaces: counters.backspaces,
     corrections: counters.corrections,
-    correctionRate: round1(
-      counters.corrections + counters.uncorrectedErrors > 0
-        ? (counters.corrections / (counters.corrections + counters.uncorrectedErrors)) * 100
-        : 100,
+    correctionRate: roundAccuracy(
+      calculateCorrectionRate(counters.corrections, counters.uncorrectedErrors),
     ),
     avgKeyDelayMs: Math.round(mean(activeDelays)),
     avgWordTimeMs: Math.round(mean(timing.wordTimes)),

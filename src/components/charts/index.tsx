@@ -11,6 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { accuracyToPercent } from '@/lib/accuracy'
 import type { DailyPoint } from '@/analytics/summarize'
 import type { WpmSample } from '@/types/typing'
 
@@ -46,7 +47,12 @@ function chartTooltipFormatter(value: unknown, name?: unknown): [React.ReactNode
 }
 
 export function TrendChart({ data }: { data: DailyPoint[] }) {
-  const rows = data.map((d) => ({ ...d, label: d.date.slice(5) }))
+  // ratio → percent exactly once, at the chart boundary
+  const rows = data.map((d) => ({
+    ...d,
+    label: d.date.slice(5),
+    accuracy: d.accuracy == null ? null : accuracyToPercent(d.accuracy, 1),
+  }))
   return (
     <ChartCard label="Daily words per minute trend">
       <LineChart data={rows} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
@@ -120,8 +126,8 @@ export function TimelineChart({ samples, fallbackWpm }: { samples: WpmSample[]; 
     samples.length > 0
       ? samples
       : [
-          { t: 0, wpm: fallbackWpm, accuracy: 100 },
-          { t: 1, wpm: fallbackWpm, accuracy: 100 },
+          { t: 0, wpm: fallbackWpm, accuracy: 1 },
+          { t: 1, wpm: fallbackWpm, accuracy: 1 },
         ]
   return (
     <ChartCard label="Speed over the session">

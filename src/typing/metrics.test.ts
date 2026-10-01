@@ -61,9 +61,9 @@ describe('WPM formulas', () => {
 })
 
 describe('accuracy', () => {
-  it('is first-attempt keystroke accuracy', () => {
-    expect(computeAccuracy(90, 100)).toBeCloseTo(90, 6)
-    expect(computeAccuracy(0, 0)).toBe(100)
+  it('is first-attempt keystroke accuracy as a ratio 0..1', () => {
+    expect(computeAccuracy(90, 100)).toBeCloseTo(0.9, 6)
+    expect(computeAccuracy(0, 0)).toBe(0) // no attempts — never 100%
   })
 })
 
@@ -103,25 +103,25 @@ describe('computeMetrics', () => {
     )
 
     expect(m.elapsedMs).toBe(60_000)
-    expect(m.accuracy).toBe(95) // 95/100
-    expect(m.finalAccuracy).toBeCloseTo(95.7, 1) // 90/94
+    expect(m.accuracy).toBe(0.95) // 95/100, stored as a ratio 0..1
+    expect(m.finalAccuracy).toBe(0.9574) // 90/94, round4
     expect(m.correctChars).toBe(90)
     expect(m.incorrectChars).toBe(4)
     expect(m.wpm).toBeCloseTo(18, 1) // (90/5)/1min
     expect(m.grossWpm).toBe(20) // (100/5)/1min
     expect(m.netWpm).toBe(17) // 20 − 3 uncorrected
     expect(m.cpm).toBe(100) // gross × 5
-    expect(m.correctionRate).toBeCloseTo(62.5, 1) // 5/(5+3)
-    expect(m.consistency).toBe(100) // even delays
+    expect(m.correctionRate).toBe(0.625) // 5/(5+3), ratio 0..1
+    expect(m.consistency).toBe(100) // even delays (0..100)
     expect(m.avgWordTimeMs).toBe(850)
     expect(m.avgPauseMs).toBe(1500)
   })
 
-  it('defaults to 100% when nothing was typed', () => {
+  it('defaults to 0 (never 100%) when nothing was typed', () => {
     const m = computeMetrics(counters(), timing(), 1000)
-    expect(m.accuracy).toBe(100)
-    expect(m.finalAccuracy).toBe(100)
-    expect(m.correctionRate).toBe(100)
+    expect(m.accuracy).toBe(0)
+    expect(m.finalAccuracy).toBe(0)
+    expect(m.correctionRate).toBe(0) // no mistakes — not credited 100%
     expect(m.wpm).toBe(0)
   })
 
@@ -131,7 +131,7 @@ describe('computeMetrics', () => {
       timing({ delays: [100, 100, 100, 100] }),
       60_000,
     )
-    expect(live.accuracy).toBe(100)
+    expect(live.accuracy).toBe(1) // ratio 0..1
     expect(live.wpm).toBe(10)
     expect(live.grossWpm).toBe(10)
     expect(live.netWpm).toBe(10)

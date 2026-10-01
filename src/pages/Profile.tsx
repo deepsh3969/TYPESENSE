@@ -9,6 +9,7 @@ import { levelFromXp } from '@/gamification/levels'
 import { displayedStreak } from '@/gamification/streaks'
 import { ACHIEVEMENT_MAP } from '@/gamification/achievements'
 import { isSupabaseConfigured } from '@/lib/supabase'
+import { accuracyToPercent } from '@/lib/accuracy'
 import { maybeSyncProfile } from '@/services/sync'
 import { cn, formatDuration } from '@/lib/utils'
 
@@ -130,7 +131,13 @@ export function Profile() {
         <div className="space-y-4 lg:col-span-2">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <StatCard label="Best WPM" value={stats.bestWpm} tone="warning" icon={<Gauge className="size-5" />} />
-            <StatCard label="Best accuracy" value={stats.bestAccuracy} unit="%" tone="success" icon={<Target className="size-5" />} />
+            <StatCard
+              label="Best accuracy"
+              value={stats.testsTaken > 0 ? accuracyToPercent(stats.bestAccuracy, 1) : '—'}
+              unit={stats.testsTaken > 0 ? '%' : undefined}
+              tone="success"
+              icon={<Target className="size-5" />}
+            />
             <StatCard label="Streak" value={displayedStreak(streakState)} icon={<Flame className="size-5" />} tone="accent" />
             <StatCard label="Tests" value={stats.testsTaken} icon={<Trophy className="size-5" />} />
             <StatCard label="Lessons" value={`${lessonsDone}`} icon={<GraduationCap className="size-5" />} hint={`${stats.lessonsCompleted} completions`} />

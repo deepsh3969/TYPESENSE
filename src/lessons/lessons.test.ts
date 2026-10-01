@@ -17,7 +17,7 @@ function completed(lessonId: string): LessonProgress {
     lessonId,
     status: 'completed',
     attempts: 1,
-    bestAccuracy: 99,
+    bestAccuracy: 0.99,
     bestWpm: 40,
     completedAt: '2026-01-01T00:00:00.000Z',
   }
@@ -94,25 +94,26 @@ describe('evaluateStage', () => {
   const stage = lesson.stages[0]
 
   it('passes only when accuracy meets the goal', () => {
-    const accuracy = stage.goalAccuracy ?? 0
-    expect(evaluateStage(lesson, 0, accuracy + 1, 0).passed).toBe(true)
-    expect(evaluateStage(lesson, 0, Math.max(0, accuracy - 1), 999).passed).toBe(false)
+    const goalPercent = stage.goalAccuracy ?? 0
+    expect(evaluateStage(lesson, 0, (goalPercent + 1) / 100, 0).passed).toBe(true)
+    expect(evaluateStage(lesson, 0, Math.max(0, goalPercent - 1) / 100, 999).passed).toBe(false)
   })
 
   it('enforces the WPM goal when the stage has one', () => {
-    const accuracy = stage.goalAccuracy ?? 0
+    const goalPercent = stage.goalAccuracy ?? 0
+    const aboveAccuracy = (goalPercent + 1) / 100
     if (stage.goalWpm !== null) {
-      expect(evaluateStage(lesson, 0, accuracy + 1, stage.goalWpm).passed).toBe(true)
-      expect(evaluateStage(lesson, 0, accuracy + 1, Math.max(0, stage.goalWpm - 1)).passed).toBe(false)
+      expect(evaluateStage(lesson, 0, aboveAccuracy, stage.goalWpm).passed).toBe(true)
+      expect(evaluateStage(lesson, 0, aboveAccuracy, Math.max(0, stage.goalWpm - 1)).passed).toBe(false)
     } else {
       // no speed gate on this stage — any WPM passes alongside the accuracy goal
-      expect(evaluateStage(lesson, 0, accuracy + 1, 1).passed).toBe(true)
+      expect(evaluateStage(lesson, 0, aboveAccuracy, 1).passed).toBe(true)
     }
   })
 
   it('returns the goals alongside the result for the UI', () => {
-    const out = evaluateStage(lesson, 0, 99.5, 42)
-    expect(out.accuracy).toBe(99.5)
+    const out = evaluateStage(lesson, 0, 0.995, 42)
+    expect(out.accuracy).toBe(0.995)
     expect(out.wpm).toBe(42)
     expect(out.goalAccuracy).toBe(stage.goalAccuracy ?? 0)
     expect(out.goalWpm).toBe(stage.goalWpm)

@@ -12,6 +12,7 @@ import { useUserStore, type SessionOutcome } from '@/stores/userStore'
 import { useProgressStore } from '@/stores/progressStore'
 import { currentUserId, maybeSyncLessonProgress, maybeSyncSession } from '@/services/sync'
 import { evaluateStage, getLesson, LESSONS, lessonStatus, type StageOutcome } from '@/lessons'
+import { accuracyToPercent, formatAccuracy } from '@/lib/accuracy'
 import type { LessonResult } from '@/types/lesson'
 import type { TypingSession } from '@/types/typing'
 import { cn } from '@/lib/utils'
@@ -81,7 +82,7 @@ export function LessonDetail() {
           accuracy: session.metrics.accuracy,
           wpm: session.metrics.wpm,
           errorsReduced: Math.max(0, (first?.errors ?? session.metrics.errors) - session.metrics.errors),
-          improvement: first ? Math.round((session.metrics.accuracy - first.accuracy) * 10) / 10 : 0,
+          improvement: first ? accuracyToPercent(session.metrics.accuracy - first.accuracy, 1) : 0,
           passed: true,
         }
         const row = {
@@ -154,8 +155,8 @@ export function LessonDetail() {
           </span>
           <h1 className="mt-4 font-display text-2xl font-bold tracking-tight text-ink uppercase">{lesson.title} — completed!</h1>
           <p className="mt-2 text-sm text-ink-muted">
-            {lessonDone.result.accuracy}% accuracy · {lessonDone.result.wpm} WPM
-            {lessonDone.result.improvement > 0 && ` · +${lessonDone.result.improvement}% accuracy across attempts`}
+            {formatAccuracy(lessonDone.result.accuracy, 1)} accuracy · {lessonDone.result.wpm} WPM
+            {lessonDone.result.improvement > 0 && ` · +${lessonDone.result.improvement} pp accuracy across attempts`}
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             <Pill className="bg-primary/10 text-primary">+{lessonDone.outcome.xp} XP</Pill>
@@ -199,7 +200,12 @@ export function LessonDetail() {
           </div>
 
           <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <ResultStat label="Accuracy" value={`${stageSession.metrics.accuracy}%`} goal={`${stageOutcome.goalAccuracy}% needed`} good={stageSession.metrics.accuracy >= stageOutcome.goalAccuracy} />
+            <ResultStat
+              label="Accuracy"
+              value={formatAccuracy(stageSession.metrics.accuracy, 1)}
+              goal={`${stageOutcome.goalAccuracy}% needed`}
+              good={accuracyToPercent(stageSession.metrics.accuracy, 2) >= stageOutcome.goalAccuracy}
+            />
             <ResultStat label="Speed" value={`${stageSession.metrics.wpm} WPM`} goal={stageOutcome.goalWpm ? `${stageOutcome.goalWpm} needed` : 'no speed goal'} good={stageOutcome.goalWpm === null || stageSession.metrics.wpm >= stageOutcome.goalWpm} />
             <ResultStat label="Errors" value={String(stageSession.metrics.errors)} goal={`${stageSession.metrics.corrections} fixed`} />
             <ResultStat label="Rhythm" value={`${stageSession.metrics.consistency}%`} goal="consistency" good={stageSession.metrics.consistency >= 70} />

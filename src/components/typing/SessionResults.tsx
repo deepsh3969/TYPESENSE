@@ -6,6 +6,7 @@ import type { SessionOutcome } from '@/stores/userStore'
 import type { LearningPlan } from '@/types/analytics'
 import { Button, Card, Pill, StatCard } from '@/components/ui'
 import { TimelineChart } from '@/components/charts'
+import { accuracyToPercent, formatAccuracy } from '@/lib/accuracy'
 import { computeProblemKeys } from '@/analytics/problemKeys'
 import { ACHIEVEMENT_MAP } from '@/gamification/achievements'
 import { cn } from '@/lib/utils'
@@ -42,7 +43,7 @@ export function SessionResults({
       className="space-y-4"
     >
       <p role="status" className="sr-only">
-        {title}. {Math.round(m.wpm)} words per minute, {m.accuracy.toFixed(1)} percent accuracy,{' '}
+        {title}. {Math.round(m.wpm)} words per minute, {accuracyToPercent(m.accuracy, 1)} percent accuracy,{' '}
         {m.errors} errors.
       </p>
       {/* header + rewards */}
@@ -86,11 +87,11 @@ export function SessionResults({
       {/* headline stats */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         <StatCard label="WPM" value={m.wpm} tone="primary" icon={<TrendingUp className="size-5" />} />
-        <StatCard label="Accuracy" value={m.accuracy.toFixed(1)} unit="%" tone="success" />
+        <StatCard label="Accuracy" value={accuracyToPercent(m.accuracy, 1)} unit="%" tone="success" />
         <StatCard label="Net WPM" value={m.netWpm} />
         <StatCard label="Rhythm" value={m.consistency} unit="%" tone="accent" />
         <StatCard label="Errors" value={m.errors} tone={m.errors > 4 ? 'warning' : 'primary'} />
-        <StatCard label="Corrections" value={`${m.correctionRate}%`} hint={`${m.corrections} fixed`} />
+        <StatCard label="Correction rate" value={formatAccuracy(m.correctionRate, 0)} hint={`${m.corrections} fixed`} />
       </div>
 
       {/* timeline */}
@@ -120,7 +121,7 @@ export function SessionResults({
                 <kbd className="rounded-[2px] border border-current/40 px-1.5 font-mono text-xs uppercase">
                   {k.key === 'space' ? '␣' : k.key}
                 </kbd>
-                {Math.round(k.accuracy * 100)}%
+                {formatAccuracy(k.accuracy, 0)}
               </span>
             ))}
           </div>

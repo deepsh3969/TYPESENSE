@@ -20,6 +20,7 @@ import { useSessionsStore } from '@/stores/sessionsStore'
 import { useProgressStore } from '@/stores/progressStore'
 import { useAuthStore } from '@/stores/authStore'
 import { goalProgress, displayedStreak } from '@/gamification/streaks'
+import { accuracyToPercent, formatAccuracy } from '@/lib/accuracy'
 import { levelFromXp } from '@/gamification/levels'
 import { recommendedLesson, lessonStatus } from '@/lessons'
 import { cn } from '@/lib/utils'
@@ -131,7 +132,13 @@ export function Dashboard() {
       {/* quick stats */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Best speed" value={user.stats.bestWpm} unit="WPM" tone="warning" icon={<Zap className="size-5" />} />
-        <StatCard label="Avg accuracy" value={Math.round(user.stats.avgAccuracy * 10) / 10} unit="%" tone="success" icon={<Target className="size-5" />} />
+        <StatCard
+          label="Avg accuracy"
+          value={user.stats.testsTaken > 0 ? accuracyToPercent(user.stats.avgAccuracy, 1) : '—'}
+          unit={user.stats.testsTaken > 0 ? '%' : undefined}
+          tone="success"
+          icon={<Target className="size-5" />}
+        />
         <StatCard label="Lessons done" value={user.stats.lessonsCompleted} icon={<GraduationCap className="size-5" />} />
         <StatCard label="Tests taken" value={user.stats.testsTaken} tone="accent" icon={<Trophy className="size-5" />} />
       </div>
@@ -268,7 +275,7 @@ export function Dashboard() {
                         ? 'border-danger/40 bg-danger/10 text-danger'
                         : 'border-warning/40 bg-warning/10 text-warning',
                     )}
-                    title={`${Math.round(k.accuracy * 100)}% accuracy`}
+                    title={`${formatAccuracy(k.accuracy)} accuracy`}
                   >
                     {k.key === 'space' ? '␣' : k.key}
                   </Link>
@@ -295,7 +302,7 @@ export function Dashboard() {
                     </span>
                     <span className="font-bold text-ink">
                       {s.metrics.wpm} WPM
-                      <span className="ml-1.5 text-ink-faint">{s.metrics.accuracy}%</span>
+                      <span className="ml-1.5 text-ink-faint">{formatAccuracy(s.metrics.accuracy, 1)}</span>
                     </span>
                   </li>
                 ))}

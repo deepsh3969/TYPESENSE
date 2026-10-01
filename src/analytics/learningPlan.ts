@@ -1,3 +1,4 @@
+import { formatAccuracy } from '@/lib/accuracy'
 import type { FocusItem, LearningPlan, ProblemKey, ProblemPattern, WordStat } from '@/types/analytics'
 import type { SessionLike } from '@/types/typing'
 import { aggregateKeyStats, computeProblemKeys, weakKeys } from './problemKeys'
@@ -62,7 +63,7 @@ export function generateLearningPlan(sessions: readonly SessionLike[]): Learning
     focus.push({
       id: 'pattern',
       label: `Fix “${topPattern.expected}”`,
-      detail: `${topPattern.accuracy}% accuracy across ${topPattern.attempts} attempts — often typed as “${topPattern.actual || topPattern.expected}”.`,
+      detail: `${formatAccuracy(topPattern.accuracy)} accuracy across ${topPattern.attempts} attempts — often typed as “${topPattern.actual || topPattern.expected}”.`,
       priority: 100,
       action: 'practice-pattern',
       target: topPattern.id,
@@ -76,7 +77,7 @@ export function generateLearningPlan(sessions: readonly SessionLike[]): Learning
     focus.push({
       id: `key-${key.key}`,
       label: i === 0 && !topPattern ? `Fix “${key.key.toUpperCase()}”` : `Sharpen the “${key.key.toUpperCase()}” key`,
-      detail: `${key.accuracy}% accuracy · ${key.errors} errors over ${key.attempts} attempts.`,
+      detail: `${formatAccuracy(key.accuracy)} accuracy · ${key.errors} errors over ${key.attempts} attempts.`,
       priority: (topPattern ? 90 : 100) - i * 6,
       action: 'practice-key',
       target: key.key,

@@ -1,3 +1,4 @@
+import { accuracyToPercent } from '@/lib/accuracy'
 import type { Lesson, LessonStatus } from '@/types/lesson'
 import type { LessonProgress } from '@/types/lesson'
 import { LESSONS, LEVELS, getLesson } from '@/data/lessons'
@@ -50,12 +51,19 @@ export function recommendedLesson(progress: Record<string, LessonProgress>): Les
 
 export interface StageOutcome {
   passed: boolean
+  /** session accuracy, RATIO 0..1 */
   accuracy: number
   wpm: number
+  /** lesson-config goal in PERCENT 0..100 (displayed as "% needed") */
   goalAccuracy: number
   goalWpm: number | null
 }
 
+/**
+ * Pass/fail for a lesson stage.
+ * `accuracy` is the canonical RATIO 0..1; the stage goal stays a percentage
+ * (lesson config) and the single ×100 happens through `accuracyToPercent`.
+ */
 export function evaluateStage(
   lesson: Lesson,
   stageIndex: number,
@@ -65,6 +73,7 @@ export function evaluateStage(
   const stage = lesson.stages[stageIndex]
   const goalAccuracy = stage.goalAccuracy ?? 0
   const goalWpm = stage.goalWpm
-  const passed = accuracy >= goalAccuracy && (goalWpm === null || wpm >= goalWpm)
+  const passed =
+    accuracyToPercent(accuracy, 2) >= goalAccuracy && (goalWpm === null || wpm >= goalWpm)
   return { passed, accuracy, wpm, goalAccuracy, goalWpm }
 }

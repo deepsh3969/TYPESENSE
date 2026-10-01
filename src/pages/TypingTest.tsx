@@ -13,6 +13,7 @@ import { useSessionsStore } from '@/stores/sessionsStore'
 import { useUserStore } from '@/stores/userStore'
 import { currentUserId, maybeSyncSession } from '@/services/sync'
 import { buildTextToLength, buildWordText, charsForDuration } from '@/typing/text'
+import { formatAccuracy } from '@/lib/accuracy'
 import { COMMON_WORDS } from '@/data/words'
 import { SENTENCES } from '@/data/passages'
 import type { TypingSession } from '@/types/typing'
@@ -83,7 +84,7 @@ export function TypingTest() {
       push({
         icon: 'xp',
         title: `+${outcome.xp} XP`,
-        detail: `${session.metrics.wpm} WPM - ${session.metrics.accuracy}% accuracy`,
+        detail: `${session.metrics.wpm} WPM - ${formatAccuracy(session.metrics.accuracy, 1)} accuracy`,
       })
       if (outcome.levelUp) push({ icon: 'levelup', title: `Level ${outcome.levelUp.to}!`, detail: 'Keep the momentum going.' })
       if (outcome.streakExtended) push({ icon: 'streak', title: `Streak: ${outcome.streak} days`, detail: 'Practice daily to keep it alive.' })
@@ -107,7 +108,7 @@ export function TypingTest() {
 
   const heat = useMemo(() => {
     const map = new Map<string, number>()
-    for (const k of summary.problemKeys) map.set(k.key, k.accuracy * 100)
+    for (const k of summary.problemKeys) map.set(k.key, k.accuracy)
     return map
   }, [summary.problemKeys])
 

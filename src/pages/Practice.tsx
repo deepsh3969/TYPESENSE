@@ -32,6 +32,7 @@ import { generatePracticeText, practiceFocusLabel } from '@/lessons/generators'
 import type { PracticeModeId } from '@/types/profile'
 import type { TypingSession } from '@/types/typing'
 import type { SessionOutcome } from '@/stores/userStore'
+import { formatAccuracy } from '@/lib/accuracy'
 import { cn } from '@/lib/utils'
 
 const MODE_ICONS: Record<string, LucideIcon> = {
@@ -172,7 +173,7 @@ export function PracticeDetail() {
       void maybeSyncSession(session)
       const outcome = recordSession(session)
       setResult({ session, outcome })
-      push({ icon: 'xp', title: `+${outcome.xp} XP`, detail: `${session.metrics.accuracy}% accuracy drill` })
+      push({ icon: 'xp', title: `+${outcome.xp} XP`, detail: `${formatAccuracy(session.metrics.accuracy, 1)} accuracy drill` })
       for (const id of outcome.unlocked) push({ icon: 'achievement', title: 'Achievement unlocked!', detail: id })
     },
     [addSession, recordSession, push],
@@ -182,7 +183,7 @@ export function PracticeDetail() {
 
   const heat = useMemo(() => {
     const map = new Map<string, number>()
-    for (const k of plan?.problemKeys ?? []) map.set(k.key, k.accuracy * 100)
+    for (const k of plan?.problemKeys ?? []) map.set(k.key, k.accuracy)
     return map
   }, [plan])
 

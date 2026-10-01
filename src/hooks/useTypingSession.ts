@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { TypingEngine, finalizeSession, type CharSlot } from '@/typing/engine'
 import type { SessionSource, TypingMode, TypingSession } from '@/types/typing'
 import { createId } from '@/lib/id'
+import { roundAccuracy } from '@/lib/accuracy'
 
 export type SessionStatus = 'idle' | 'running' | 'done'
 
@@ -20,11 +21,14 @@ export interface LiveSnapshot {
   wpm: number
   grossWpm: number
   netWpm: number
+  /** ratio 0–1 (0 before the first keystroke) */
   accuracy: number
   consistency: number
   errors: number
   corrections: number
   backspaces: number
+  /** printable keystrokes so far — accuracy denominator (0 ⇒ no accuracy yet) */
+  attempts: number
   elapsedMs: number
   remainingMs: number | null
   index: number
@@ -35,11 +39,12 @@ const IDLE_LIVE: LiveSnapshot = {
   wpm: 0,
   grossWpm: 0,
   netWpm: 0,
-  accuracy: 100,
+  accuracy: 0,
   consistency: 100,
   errors: 0,
   corrections: 0,
   backspaces: 0,
+  attempts: 0,
   elapsedMs: 0,
   remainingMs: null,
   index: 0,
@@ -215,11 +220,12 @@ export function useTypingSession(setup: SessionSetup, onFinish?: (session: Typin
       wpm: Math.round(m.wpm),
       grossWpm: Math.round(m.grossWpm),
       netWpm: Math.round(m.netWpm * 10) / 10,
-      accuracy: Math.round(m.accuracy * 10) / 10,
+      accuracy: roundAccuracy(m.accuracy),
       consistency: Math.round(m.consistency * 100),
       errors: counters.uncorrectedErrors,
       corrections: counters.corrections,
       backspaces: counters.backspaces,
+      attempts: counters.totalKeystrokes,
       elapsedMs,
       remainingMs: duration !== undefined ? Math.max(0, duration - elapsedMs) : null,
       index: engine.index,

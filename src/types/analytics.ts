@@ -8,8 +8,9 @@ export interface ProblemKey {
   attempts: number
   errors: number
   corrections: number
-  /** 1 - errors/attempts */
+  /** 1 - errors/attempts — RATIO 0..1 */
   accuracy: number
+  /** RATIO 0..1 (complement of accuracy) */
   errorRate: number
   avgResponseMs: number
   /** 0..1 — how much evidence we have (attempts, recency) */
@@ -37,6 +38,7 @@ export interface ProblemPattern {
   actual: string
   attempts: number
   errors: number
+  /** RATIO 0..1 */
   accuracy: number
   avgDelayMs: number
   confidence: number
@@ -50,6 +52,7 @@ export interface WordStat {
   word: string
   attempts: number
   errors: number
+  /** RATIO 0..1 */
   accuracy: number
   avgTimeMs: number
 }
@@ -83,10 +86,12 @@ export interface AnalyticsSummary {
   totalSeconds: number
   avgWpm: number
   bestWpm: number
+  /** RATIO 0..1 (session-level average of ratios) */
   avgAccuracy: number
   avgConsistency: number
   /** percentage-point change of first vs last half of the window */
   wpmDelta: number
+  /** percentage-point change (ratio delta ×100, via accuracyToPercent) */
   accuracyDelta: number
   problemKeys: ProblemKey[]
   patterns: ProblemPattern[]

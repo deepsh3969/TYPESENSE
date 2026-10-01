@@ -55,11 +55,11 @@ describe('sessionXp', () => {
   })
 
   it('rewards time, speed, accuracy and rhythm together', () => {
-    const full = sessionXp({ seconds: 60, netWpm: 60, accuracy: 99, consistency: 90 })
+    const full = sessionXp({ seconds: 60, netWpm: 60, accuracy: 0.99, consistency: 90 })
     // base 8 + speed 36 + quality 25 + rhythm 10
     expect(full).toBe(79)
 
-    const plain = sessionXp({ seconds: 60, netWpm: 60, accuracy: 80, consistency: 50 })
+    const plain = sessionXp({ seconds: 60, netWpm: 60, accuracy: 0.8, consistency: 50 })
     // base 8 + speed 36, no quality or rhythm bonus
     expect(plain).toBe(44)
     expect(full).toBeGreaterThan(plain)

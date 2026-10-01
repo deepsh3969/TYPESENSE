@@ -36,6 +36,7 @@ export interface LessonProgress {
   lessonId: string
   status: LessonStatus
   attempts: number
+  /** best session accuracy, RATIO 0..1 */
   bestAccuracy: number
   bestWpm: number
   completedAt: string | null
@@ -43,6 +44,7 @@ export interface LessonProgress {
 
 export interface LessonResult {
   lessonId: string
+  /** session accuracy, RATIO 0..1 */
   accuracy: number
   wpm: number
   /** how many tracked errors remain compared with the first stage */

@@ -1,3 +1,4 @@
+import { accuracyToPercent, calculateAccuracy, roundAccuracy } from '@/lib/accuracy'
 import type { AnalyticsSummary, ProblemPattern, WordStat } from '@/types/analytics'
 import type { SessionLike } from '@/types/typing'
 import { aggregateKeyStats, computeProblemKeys } from './problemKeys'
@@ -14,6 +15,7 @@ export function filterSince(sessions: readonly SessionLike[], range: RangeDays):
 export interface DailyPoint {
   date: string
   wpm: number | null
+  /** RATIO 0..1 (null on days without sessions) */
   accuracy: number | null
   minutes: number
   errors: number
@@ -44,7 +46,7 @@ export function dailySeries(sessions: readonly SessionLike[], range: RangeDays):
     points.push({
       date: key,
       wpm: Math.round((list.reduce((a, s) => a + s.metrics.wpm, 0) / n) * 10) / 10,
-      accuracy: Math.round((list.reduce((a, s) => a + s.metrics.accuracy, 0) / n) * 10) / 10,
+      accuracy: roundAccuracy(list.reduce((a, s) => a + s.metrics.accuracy, 0) / n),
       minutes: Math.round(list.reduce((a, s) => a + s.metrics.elapsedMs / 60000, 0) * 10) / 10,
       errors: list.reduce((a, s) => a + s.metrics.errors, 0),
     })
@@ -63,13 +65,14 @@ export function windowDelta(sessions: readonly SessionLike[]): { wpmDelta: numbe
   const second = ordered.slice(half)
   return {
     wpmDelta: Math.round((meanWpm(second) - meanWpm(first)) * 10) / 10,
-    accuracyDelta: Math.round((meanAcc(second) - meanAcc(first)) * 10) / 10,
+    accuracyDelta: accuracyToPercent(meanAcc(second) - meanAcc(first), 1),
   }
 }
 
 export interface KeyAccuracy {
   attempts: number
   errors: number
+  /** RATIO 0..1 */
   accuracy: number
 }
 
@@ -80,7 +83,7 @@ export function keyAccuracyFor(sessions: readonly SessionLike[], key: string): K
   return {
     attempts: agg.attempts,
     errors: agg.errors,
-    accuracy: Math.round((1 - agg.errors / agg.attempts) * 1000) / 10,
+    accuracy: roundAccuracy(calculateAccuracy(agg.attempts, agg.errors)),
   }
 }
 
@@ -107,7 +110,7 @@ export function analyze(sessions: readonly SessionLike[]): FullAnalysis {
     totalSeconds: Math.round(sessions.reduce((a, s) => a + s.metrics.elapsedMs / 1000, 0)),
     avgWpm: n ? Math.round((sessions.reduce((a, s) => a + s.metrics.wpm, 0) / n) * 10) / 10 : 0,
     bestWpm: n ? Math.max(...sessions.map((s) => s.metrics.wpm)) : 0,
-    avgAccuracy: n ? Math.round((sessions.reduce((a, s) => a + s.metrics.accuracy, 0) / n) * 10) / 10 : 0,
+    avgAccuracy: n ? roundAccuracy(sessions.reduce((a, s) => a + s.metrics.accuracy, 0) / n) : 0,
     avgConsistency: n
       ? Math.round((sessions.reduce((a, s) => a + s.metrics.consistency, 0) / n) * 10) / 10
       : 0,

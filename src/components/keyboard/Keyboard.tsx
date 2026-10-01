@@ -33,7 +33,7 @@ const MODIFIER_IDS = new Set([
 
 export interface KeyboardProps {
   lastKey?: { char: string; correct: boolean } | null
-  /** physical key id → accuracy (0-100) for heat highlighting */
+  /** physical key id → accuracy RATIO 0–1 for heat highlighting (≥0.97 neutral, <0.97 warning, <0.93 danger) */
   heat?: ReadonlyMap<string, number>
   /** physical key ids to outline (drill targets) */
   highlight?: readonly string[]
@@ -45,8 +45,8 @@ export interface KeyboardProps {
 
 function heatClass(accuracy: number | undefined): string {
   if (accuracy === undefined) return ''
-  if (accuracy >= 97) return ''
-  if (accuracy >= 93) return 'border-warning/60 text-warning'
+  if (accuracy >= 0.97) return ''
+  if (accuracy >= 0.93) return 'border-warning/60 text-warning'
   return 'border-danger/70 text-danger'
 }
 

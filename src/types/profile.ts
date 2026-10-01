@@ -28,6 +28,7 @@ export interface PracticeSession {
   focus: string
   text: string
   wpm: number
+  /** RATIO 0..1 (session.metrics.accuracy) */
   accuracy: number
   seconds: number
   at: string
@@ -53,7 +54,9 @@ export interface UserStats {
   lessonsCompleted: number
   bestWpm: number
   avgWpm: number
+  /** RATIO 0..1 */
   avgAccuracy: number
+  /** RATIO 0..1 */
   bestAccuracy: number
   /** 0..100 */
   bestConsistency: number

@@ -54,7 +54,7 @@ export function levelFromXp(totalXp: number): LevelInfo {
   }
 }
 
-/** XP awarded for completing a typing session. */
+/** XP awarded for completing a typing session. `accuracy` is a RATIO 0..1; `consistency` is 0..100. */
 export function sessionXp(input: {
   seconds: number
   netWpm: number
@@ -64,7 +64,7 @@ export function sessionXp(input: {
   const minutes = input.seconds / 60
   const base = Math.round(minutes * 8)
   const speed = Math.round(input.netWpm * 0.6)
-  const quality = input.accuracy >= 97 ? 25 : input.accuracy >= 94 ? 12 : input.accuracy >= 90 ? 5 : 0
+  const quality = input.accuracy >= 0.97 ? 25 : input.accuracy >= 0.94 ? 12 : input.accuracy >= 0.9 ? 5 : 0
   const rhythm = input.consistency >= 85 ? 10 : 0
   return Math.max(5, base + speed + quality + rhythm)
 }

@@ -1,6 +1,7 @@
 import { getSupabase } from '@/lib/supabase'
+import { toAccuracyRatio } from '@/lib/accuracy'
 import { useAuthStore } from '@/stores/authStore'
-import { useSessionsStore } from '@/stores/sessionsStore'
+import { useSessionsStore, normalizeSession } from '@/stores/sessionsStore'
 import { useProgressStore } from '@/stores/progressStore'
 import { useUserStore } from '@/stores/userStore'
 import type { LessonProgress } from '@/types/lesson'
@@ -98,22 +99,26 @@ export async function mergeRemoteSessions(): Promise<number> {
   const known = new Set(store.sessions.map((s) => s.id))
   const remote: TypingSession[] = data
     .filter((row) => !known.has(row.id))
-    .map((row) => ({
-      id: row.id,
-      userId: row.user_id,
-      mode: row.mode,
-      source: row.source,
-      practiceMode: row.practice_mode ?? undefined,
-      lessonId: row.lesson_id ?? null,
-      target: row.target,
-      text: row.text,
-      startedAt: row.started_at,
-      finishedAt: row.finished_at,
-      metrics: row.metrics,
-      keyStats: row.key_stats ?? [],
-      errors: row.errors ?? [],
-      timeline: row.timeline ?? [],
-    }))
+    .map((row) =>
+      // accuracy contract: metrics/timeline accuracies are ratios 0..1 —
+      // normalise rows written before the contract existed (idempotent)
+      normalizeSession({
+        id: row.id,
+        userId: row.user_id,
+        mode: row.mode,
+        source: row.source,
+        practiceMode: row.practice_mode ?? undefined,
+        lessonId: row.lesson_id ?? null,
+        target: row.target,
+        text: row.text,
+        startedAt: row.started_at,
+        finishedAt: row.finished_at,
+        metrics: row.metrics,
+        keyStats: row.key_stats ?? [],
+        errors: row.errors ?? [],
+        timeline: row.timeline ?? [],
+      }),
+    )
   if (remote.length > 0) {
     useSessionsStore.setState({ sessions: [...remote, ...store.sessions].slice(0, 120) })
   }
@@ -138,7 +143,8 @@ export async function mergeRemoteLessons(): Promise<void> {
       lessonId: row.lesson_id,
       status: row.status,
       attempts: row.attempts,
-      bestAccuracy: row.best_accuracy,
+      // accuracy contract: ratio 0..1 (normalises legacy 0..100 rows)
+      bestAccuracy: toAccuracyRatio(row.best_accuracy),
       bestWpm: row.best_wpm,
       completedAt: row.completed_at,
     }

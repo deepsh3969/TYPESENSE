@@ -53,7 +53,7 @@ function makeSession(input: {
       grossWpm: 55,
       netWpm: 48,
       cpm: 275,
-      accuracy: 95,
+      accuracy: 0.95,
       errors: input.errors?.length ?? 0,
       uncorrectedErrors: 0,
       correctChars: 300,
@@ -62,12 +62,12 @@ function makeSession(input: {
       missedChars: 0,
       backspaces: 4,
       corrections: 4,
-      correctionRate: 100,
+      correctionRate: 1,
       avgKeyDelayMs: 200,
       avgWordTimeMs: 900,
       avgPauseMs: 1500,
       consistency: 80,
-      finalAccuracy: 98,
+      finalAccuracy: 0.98,
     },
   }
 }
@@ -90,8 +90,8 @@ describe('problem key detection (Phase 7)', () => {
     const r = keys.find((k) => k.key === 'r')!
     const e = keys.find((k) => k.key === 'e')!
 
-    expect(r.accuracy).toBeCloseTo(60, 0)
-    expect(e.accuracy).toBeCloseTo(94, 0)
+    expect(r.accuracy).toBeCloseTo(0.6, 3)
+    expect(e.accuracy).toBeCloseTo(0.94, 3)
     expect(r.score).toBeLessThan(e.score)
     expect(keys[0].key).toBe('r')
     expect(r.status).toBe('critical')
@@ -120,7 +120,7 @@ describe('problem key detection (Phase 7)', () => {
     const r = computeProblemKeys(sessions).find((k) => k.key === 'r')!
     expect(r.attempts).toBe(20)
     expect(r.errors).toBe(6)
-    expect(r.accuracy).toBeCloseTo(70, 0)
+    expect(r.accuracy).toBeCloseTo(0.7, 3)
   })
 })
 
@@ -140,7 +140,7 @@ describe('pattern analysis (Phase 8)', () => {
     expect(th!.actual).toBe('ht')
     expect(th!.errors).toBe(2)
     expect(th!.attempts).toBe(4)
-    expect(th!.accuracy).toBe(50)
+    expect(th!.accuracy).toBe(0.5)
   })
 
   it('computes bigram accuracy from occurrences vs failures', () => {
@@ -151,7 +151,7 @@ describe('pattern analysis (Phase 8)', () => {
     const th = patterns.find((p) => p.expected === 'th')!
     expect(th.attempts).toBe(4)
     expect(th.errors).toBe(1)
-    expect(th.accuracy).toBe(75)
+    expect(th.accuracy).toBe(0.75)
   })
 
   it('builds substitution patterns from expected→typed pairs', () => {
@@ -169,7 +169,7 @@ describe('pattern analysis (Phase 8)', () => {
     const rt = patterns.find((p) => p.expected === 'r' && p.actual === 't')
     expect(rt).toBeDefined()
     expect(rt!.errors).toBe(18)
-    expect(rt!.accuracy).toBeCloseTo(55, 0)
+    expect(rt!.accuracy).toBeCloseTo(0.55, 3)
     expect(rt!.recommendation).toContain('r')
   })
 
@@ -181,7 +181,7 @@ describe('pattern analysis (Phase 8)', () => {
     const cat = words.find((w) => w.word === 'cat')!
     expect(cat.attempts).toBe(3)
     expect(cat.errors).toBe(1)
-    expect(cat.accuracy).toBeCloseTo(66.7, 1)
+    expect(cat.accuracy).toBeCloseTo(0.6667, 3)
     const dog = words.find((w) => w.word === 'dog')!
     expect(dog.errors).toBe(0)
     expect(weakWords(words)).toHaveLength(1)
@@ -200,7 +200,7 @@ describe('pattern analysis (Phase 8)', () => {
     const biggest = biggestPattern({ bigrams, trigrams: [], substitutions: [], transpositions: [], prefixes: [], suffixes: [] })
     expect(biggest).not.toBeNull()
     expect(biggest!.expected).toBe('th')
-    expect(biggest!.accuracy).toBe(60)
+    expect(biggest!.accuracy).toBe(0.6)
   })
 })
 
@@ -280,7 +280,7 @@ describe('summarize (Phase 15 support)', () => {
     expect(points).toHaveLength(7)
     const today = points[points.length - 1]
     expect(today.wpm).toBe(50)
-    expect(today.accuracy).toBe(95)
+    expect(today.accuracy).toBe(0.95)
     expect(today.errors).toBe(0)
     expect(points.slice(0, 6).every((p) => p.wpm === null && p.accuracy === null)).toBe(true)
   })
@@ -294,8 +294,8 @@ describe('summarize (Phase 15 support)', () => {
       ],
     })
     const q = keyAccuracyFor([s], 'q')
-    expect(q).toEqual({ attempts: 10, errors: 2, accuracy: 80 })
-    expect(keyAccuracyFor([s], 'z')?.accuracy).toBe(100)
+    expect(q).toEqual({ attempts: 10, errors: 2, accuracy: 0.8 })
+    expect(keyAccuracyFor([s], 'z')?.accuracy).toBe(1)
     expect(keyAccuracyFor([s], 'm')).toBeNull()
   })
 
@@ -305,7 +305,7 @@ describe('summarize (Phase 15 support)', () => {
     expect(summary.sessions).toBe(1)
     expect(summary.totalSeconds).toBe(60)
     expect(summary.bestWpm).toBe(50)
-    expect(summary.avgAccuracy).toBe(95)
+    expect(summary.avgAccuracy).toBe(0.95)
     expect(Array.isArray(summary.patterns)).toBe(true)
   })
 })

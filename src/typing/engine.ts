@@ -1,4 +1,5 @@
 import { createId } from '@/lib/id'
+import { roundAccuracy } from '@/lib/accuracy'
 import type {
   ErrorCategory,
   KeystrokeEvent,
@@ -397,8 +398,9 @@ export class TypingEngine {
     const live = computeLiveMetrics(this.counters, this.timing, elapsed)
     const t = Math.round((elapsed / 1000) * 10) / 10
     const last = this.samples[this.samples.length - 1]
-    if (last && last.t === t && last.wpm === live.wpm && last.accuracy === live.accuracy) return
-    this.samples.push({ t, wpm: Math.round(live.wpm), accuracy: Math.round(live.accuracy * 10) / 10 })
+    const accuracy = roundAccuracy(live.accuracy)
+    if (last && last.t === t && last.wpm === live.wpm && last.accuracy === accuracy) return
+    this.samples.push({ t, wpm: Math.round(live.wpm), accuracy })
   }
 
   finish(now = this.now()): void {
