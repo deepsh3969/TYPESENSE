@@ -21,7 +21,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold',
+        'inline-flex items-center gap-1 rounded-[3px] border px-2.5 py-0.5 text-[11px] font-bold tracking-[0.06em] uppercase',
         tones[tone],
         className,
       )}
@@ -36,7 +36,7 @@ export function Pill({ children, className }: { children: ReactNode; className?:
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full bg-surface-2 px-3 py-1 text-xs font-medium text-ink-muted',
+        'inline-flex items-center rounded-[3px] border border-line bg-surface-2 px-3 py-1 text-xs font-medium text-ink-muted',
         className,
       )}
     >

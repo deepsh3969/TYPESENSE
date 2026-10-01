@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { KeyboardIcon, Lightbulb, Plus, RotateCcw, Sliders } from 'lucide-react'
-import { Button, Card, LinkButton, SegmentedControl, Textarea } from '@/components/ui'
+import { Button, LinkButton, SegmentedControl, Textarea } from '@/components/ui'
 import { TypingArea } from '@/components/typing/TypingArea'
 import { StatsBar } from '@/components/typing/StatsBar'
 import { SessionResults } from '@/components/typing/SessionResults'
@@ -119,20 +119,34 @@ export function TypingTest() {
   const canRun = text.trim().length > 0
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink">Typing Test</h1>
-          <p className="text-sm text-ink-muted">Measure your speed, then let the analysis do the talking.</p>
+    <div className="space-y-6">
+      {/* page header */}
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
+        <div className="min-w-0">
+          <p className="label label-accent mb-2">Test — Measure & analyze</p>
+          <h1 className="section-title text-ink">Typing Test</h1>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-ink-muted">
+            Measure your speed, then let the analysis do the talking.
+          </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={newTest}>
+        <div className="flex items-center gap-3">
+          <span className="hidden text-right text-[11px] font-semibold tracking-[0.12em] text-ink-faint uppercase sm:block">
+            {mode === 'time'
+              ? `${length}s sprint`
+              : mode === 'words'
+                ? `${length} words`
+                : 'Custom text'}
+            <br />
+            {status === 'running' ? 'Test running' : status === 'done' ? 'Test finished' : 'Ready'}
+          </span>
+          <Button variant="secondary" size="sm" onClick={newTest}>
             <Plus className="size-4" /> New test
           </Button>
         </div>
       </div>
 
-      <Card className="flex flex-wrap items-center gap-3 p-4">
+      {/* controls */}
+      <div className="flex flex-wrap items-center gap-3 border border-line bg-surface p-3">
         <SegmentedControl
           value={mode}
           onChange={setMode}
@@ -152,8 +166,10 @@ export function TypingTest() {
                 type="button"
                 onClick={() => setLength(opt)}
                 disabled={status === 'running'}
-                className={`rounded-lg px-3 py-1.5 text-sm font-bold transition-colors disabled:opacity-50 ${
-                  length === opt ? 'bg-primary text-white' : 'bg-surface-2 text-ink-muted hover:text-ink'
+                className={`border px-3 py-1.5 text-xs font-bold uppercase tracking-[0.06em] transition-colors disabled:opacity-50 ${
+                  length === opt
+                    ? 'border-primary bg-primary text-white'
+                    : 'border-line bg-surface-2 text-ink-muted hover:text-ink'
                 }`}
               >
                 {opt}
@@ -164,7 +180,7 @@ export function TypingTest() {
         ) : (
           <span className="text-sm text-ink-muted">Paste or type your own text below.</span>
         )}
-        <div className="ml-auto flex items-center gap-1.5 text-xs font-medium text-ink-faint">
+        <div className="ml-auto flex items-center gap-1.5 text-[11px] font-semibold tracking-[0.1em] text-ink-faint uppercase">
           <Sliders className="size-3.5" aria-hidden />
           {mode === 'time'
             ? 'Ends when the timer runs out'
@@ -172,11 +188,11 @@ export function TypingTest() {
               ? 'Ends at the last word'
               : 'Ends at the last character'}
         </div>
-      </Card>
+      </div>
 
       {mode === 'custom' && (
-        <Card className="p-4">
-          <label htmlFor="custom-text" className="mb-2 block text-sm font-bold text-ink">
+        <div className="border border-line bg-surface p-4">
+          <label htmlFor="custom-text" className="label mb-2 block">
             Custom text
           </label>
           <Textarea
@@ -191,7 +207,7 @@ export function TypingTest() {
             className="font-mono"
           />
           {!canRun && <p className="mt-2 text-xs text-ink-faint">Add at least a few words to start the test.</p>}
-        </Card>
+        </div>
       )}
 
       {result ? (
@@ -217,21 +233,22 @@ export function TypingTest() {
           {canRun ? (
             <TypingArea slots={slots} index={index} text={engineText} running={status === 'running'} />
           ) : (
-            <Card className="p-8 text-center text-sm text-ink-muted">
+            <div className="border border-dashed border-line bg-surface p-10 text-center text-sm text-ink-muted">
               Your custom text will appear here once you add it above.
-            </Card>
+            </div>
           )}
 
-          <Card className="p-4">
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+          {/* virtual keyboard + health */}
+          <section className="border border-line bg-surface p-4 sm:p-5" aria-label="Virtual keyboard">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <h2 className="flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-ink uppercase">
                 <KeyboardIcon className="size-4 text-primary" aria-hidden />
                 Keyboard
                 {status === 'running' && (
                   <button
                     type="button"
                     onClick={retry}
-                    className="ml-2 inline-flex items-center gap-1 rounded-lg bg-surface-2 px-2 py-1 text-xs font-semibold text-ink-muted transition-colors hover:text-ink"
+                    className="ml-2 inline-flex items-center gap-1 border border-line px-2 py-1 text-[10px] font-bold tracking-[0.08em] text-ink-muted uppercase transition-colors hover:border-primary hover:text-ink"
                   >
                     <RotateCcw className="size-3" /> Restart
                   </button>
@@ -239,16 +256,33 @@ export function TypingTest() {
               </h2>
               <span className="flex items-center gap-1.5 text-xs text-ink-faint">
                 <Lightbulb className="size-3.5" aria-hidden />
-                Red keys are your weakest - every mistake is classified automatically.
+                Red keys are your weakest — every mistake is classified automatically.
               </span>
             </div>
             <Keyboard lastKey={lastKey} heat={heat} size="md" className="w-full" />
-            <div className="mt-3 flex justify-center">
-              <LinkButton to="/app/practice/problem-keys" variant="outline" size="sm">
-                Drill your problem keys
-              </LinkButton>
+            <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-line pt-3">
+              {summary.problemKeys.length > 0 ? (
+                <>
+                  <span className="label label-accent">Needs work</span>
+                  {summary.problemKeys.slice(0, 6).map((k) => (
+                    <kbd
+                      key={k.key}
+                      className="border border-danger/60 bg-danger/10 px-2 py-0.5 font-mono text-xs font-bold text-danger"
+                    >
+                      {k.key}
+                    </kbd>
+                  ))}
+                  <LinkButton to="/app/practice/problem-keys" variant="outline" size="sm" className="ml-auto">
+                    Drill your problem keys
+                  </LinkButton>
+                </>
+              ) : (
+                <LinkButton to="/app/practice/problem-keys" variant="outline" size="sm" className="ml-auto">
+                  Drill your problem keys
+                </LinkButton>
+              )}
             </div>
-          </Card>
+          </section>
         </>
       )}
 

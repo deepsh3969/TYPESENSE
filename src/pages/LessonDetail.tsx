@@ -149,10 +149,10 @@ export function LessonDetail() {
     return (
       <div className="space-y-5">
         <Card className="border-success/40 p-6 text-center sm:p-10">
-          <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-success/10">
+          <span className="mx-auto flex size-14 items-center justify-center rounded-[4px] bg-success/10">
             <Trophy className="size-7 text-success" aria-hidden />
           </span>
-          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-ink">{lesson.title} — completed!</h1>
+          <h1 className="mt-4 font-display text-2xl font-bold tracking-tight text-ink uppercase">{lesson.title} — completed!</h1>
           <p className="mt-2 text-sm text-ink-muted">
             {lessonDone.result.accuracy}% accuracy · {lessonDone.result.wpm} WPM
             {lessonDone.result.improvement > 0 && ` · +${lessonDone.result.improvement}% accuracy across attempts`}
@@ -185,11 +185,11 @@ export function LessonDetail() {
       <div className="space-y-5">
         <Card className={cn('p-6', passed ? 'border-success/40' : 'border-warning/50')}>
           <div className="flex items-center gap-3">
-            <span className={cn('flex size-11 items-center justify-center rounded-xl', passed ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning')}>
+            <span className={cn('flex size-11 items-center justify-center rounded-[4px]', passed ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning')}>
               {passed ? <CheckCircle2 className="size-6" /> : <XCircle className="size-6" />}
             </span>
             <div>
-              <h1 className="text-lg font-extrabold text-ink">
+              <h1 className="text-lg font-display font-bold text-ink uppercase">
                 {passed ? 'Stage passed!' : 'Not quite — run it again'}
               </h1>
               <p className="text-sm text-ink-muted">
@@ -251,7 +251,7 @@ export function LessonDetail() {
           >
             <ArrowLeft className="size-4" /> Lessons
           </Link>
-          <h1 className="mt-1 text-xl font-extrabold tracking-tight text-ink">
+          <h1 className="mt-1 font-display text-xl font-bold tracking-tight text-ink uppercase">
             {lesson.order}. {lesson.title}
           </h1>
           <p className="text-sm text-ink-muted">{lesson.objective}</p>
@@ -262,7 +262,7 @@ export function LessonDetail() {
             <li
               key={s.label}
               className={cn(
-                'rounded-full px-2.5 py-1 text-[11px] font-bold',
+                'rounded-[3px] border border-line px-2.5 py-1 text-[11px] font-bold',
                 i === stageIndex
                   ? 'bg-primary text-white'
                   : i < stageIndex
@@ -290,7 +290,7 @@ export function LessonDetail() {
 
       <Card className="p-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+          <h2 className="flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-ink uppercase">
             <KeyboardIcon className="size-4 text-primary" aria-hidden />
             Focus keys: {lesson.keys.slice(0, 8).join(' ')}
           </h2>
@@ -309,7 +309,7 @@ export function LessonDetail() {
 
 function ResultStat({ label, value, goal, good }: { label: string; value: string; goal: string; good?: boolean }) {
   return (
-    <div className={cn('rounded-xl border p-3 text-center', good === true ? 'border-success/40 bg-success/5' : good === false ? 'border-warning/50 bg-warning/5' : 'border-line bg-surface-2/50')}>
+    <div className={cn('rounded-[4px] border p-3 text-center', good === true ? 'border-success/40 bg-success/5' : good === false ? 'border-warning/50 bg-warning/5' : 'border-line bg-surface-2/50')}>
       <p className="text-[10px] font-bold uppercase tracking-wider text-ink-faint">{label}</p>
       <p className="mt-1 text-xl font-extrabold text-ink">{value}</p>
       <p className="mt-0.5 text-[11px] text-ink-faint">{goal}</p>

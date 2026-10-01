@@ -36,24 +36,25 @@ export function Lessons() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-5">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink">Lessons</h1>
-          <p className="text-sm text-ink-muted">{LESSONS.length} lessons across 5 levels — unlock the next by passing the last.</p>
+          <p className="label label-accent mb-2">Curriculum</p>
+          <h1 className="section-title text-ink">Lessons</h1>
+          <p className="mt-2 text-sm text-ink-muted">{LESSONS.length} lessons across 5 levels — unlock the next by passing the last.</p>
         </div>
         <div className="text-right">
-          <p className="text-xs font-semibold uppercase tracking-wider text-ink-faint">Curriculum</p>
-          <p className="text-xl font-extrabold text-primary">{Math.round(overall)}%</p>
+          <p className="label">Completion</p>
+          <p className="num text-2xl font-bold text-primary">{Math.round(overall)}%</p>
         </div>
       </div>
 
       {rec && (
-        <Card className="flex flex-wrap items-center justify-between gap-3 border-primary/30 bg-primary/5 p-5">
+        <Card className="flex flex-wrap items-center justify-between gap-3 border-primary/50 bg-primary/5 p-5">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-primary">
+            <p className="label label-accent">
               {progress[rec.id]?.attempts ? 'Continue learning' : 'Recommended next'}
             </p>
-            <h2 className="mt-1 text-lg font-extrabold text-ink">{rec.title}</h2>
+            <h2 className="mt-1 font-display text-lg font-bold tracking-tight text-ink uppercase">{rec.title}</h2>
             <p className="mt-0.5 text-sm text-ink-muted">{rec.objective}</p>
           </div>
           <LinkButton to={`/app/lessons/${rec.id}`}>
@@ -73,7 +74,7 @@ export function Lessons() {
                   <span className="flex size-7 items-center justify-center rounded-lg bg-primary/10 text-xs font-extrabold text-primary">
                     {level.level}
                   </span>
-                  <h2 className="text-base font-extrabold text-ink">{level.title}</h2>
+                  <h2 className="font-display text-base font-bold text-ink uppercase tracking-tight">{level.title}</h2>
                   <span className="text-xs font-medium text-ink-faint">· {level.objective}</span>
                 </div>
               </div>
@@ -95,7 +96,7 @@ export function Lessons() {
                     <div className="flex items-start justify-between gap-2">
                       <span
                         className={cn(
-                          'flex size-9 items-center justify-center rounded-xl',
+                          'flex size-9 items-center justify-center rounded-[4px]',
                           status === 'completed'
                             ? 'bg-success/10 text-success'
                             : status === 'locked'
@@ -105,7 +106,7 @@ export function Lessons() {
                       >
                         <StatusIcon status={status} />
                       </span>
-                      <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ink-muted">
+                      <span className="rounded-[3px] border border-line bg-surface-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ink-muted">
                         {CATEGORY_LABEL[lesson.category] ?? lesson.category}
                       </span>
                     </div>

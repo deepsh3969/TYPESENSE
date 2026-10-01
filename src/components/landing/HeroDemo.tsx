@@ -52,16 +52,16 @@ export function HeroDemo() {
 
   return (
     <div className="pointer-events-none select-none" aria-hidden>
-      <div className="rounded-2xl border border-line bg-surface/80 p-4 shadow-2xl shadow-primary/10 backdrop-blur">
+      <div className="rounded-[4px] border border-line bg-surface p-4 shadow-[0_24px_60px_-30px_rgba(255,59,59,0.35)]">
         <div className="mb-3 flex items-center justify-between">
-          <span className="flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-primary">
+          <span className="flex items-center gap-1.5 rounded-[3px] border border-primary/50 bg-primary/10 px-2.5 py-1 text-[11px] font-bold tracking-[0.08em] text-primary uppercase">
             <span className="relative flex size-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-primary" />
             </span>
             live engine
           </span>
-          <span className="text-[11px] font-semibold text-ink-faint">92 WPM · 98% acc</span>
+          <span className="num text-[11px] font-semibold text-ink-faint">92 WPM · 98% acc</span>
         </div>
         <TypingArea
           slots={engine.slots}

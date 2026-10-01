@@ -2,20 +2,34 @@ import { QWERTY_ROWS, keyIdForChar, type KeyboardKey } from '@/data/keyboard'
 import { cn } from '@/lib/utils'
 
 const FINGER_BG: Record<string, string> = {
-  lPinky: 'bg-indigo-500/20',
-  lRing: 'bg-sky-500/20',
-  lMiddle: 'bg-emerald-500/20',
-  lIndex: 'bg-amber-500/20',
-  rIndex: 'bg-rose-500/20',
-  rMiddle: 'bg-violet-500/20',
-  rRing: 'bg-cyan-500/20',
-  rPinky: 'bg-fuchsia-500/20',
-  thumb: 'bg-slate-400/20',
+  lPinky: 'bg-indigo-500/15',
+  lRing: 'bg-sky-500/15',
+  lMiddle: 'bg-emerald-500/15',
+  lIndex: 'bg-amber-500/15',
+  rIndex: 'bg-rose-500/15',
+  rMiddle: 'bg-violet-500/15',
+  rRing: 'bg-cyan-500/15',
+  rPinky: 'bg-fuchsia-500/15',
+  thumb: 'bg-slate-400/15',
   none: '',
 }
 
-/** row indent in key units — classic stagger */
-const ROW_OFFSET = [0, 0.35, 0.7, 1.15, 3.5]
+/** row indent in key units — modifier keys now carry the stagger inline */
+const ROW_OFFSET = [0, 0, 0, 0, 0]
+
+const MODIFIER_IDS = new Set([
+  'backspace',
+  'tab',
+  'caps',
+  'enter',
+  'shift-left',
+  'shift-right',
+  'ctrl-left',
+  'ctrl-right',
+  'alt-left',
+  'alt-right',
+  'meta',
+])
 
 export interface KeyboardProps {
   lastKey?: { char: string; correct: boolean } | null
@@ -32,8 +46,8 @@ export interface KeyboardProps {
 function heatClass(accuracy: number | undefined): string {
   if (accuracy === undefined) return ''
   if (accuracy >= 97) return ''
-  if (accuracy >= 93) return 'bg-warning/40 border-warning/50'
-  return 'bg-danger/45 border-danger/60'
+  if (accuracy >= 93) return 'border-warning/60 text-warning'
+  return 'border-danger/70 text-danger'
 }
 
 export function Keyboard({
@@ -47,15 +61,18 @@ export function Keyboard({
 }: KeyboardProps) {
   const pressedId = lastKey ? keyIdForChar(lastKey.char) : null
   const pressedCorrect = lastKey?.correct ?? true
-  const unit = size === 'sm' ? 30 : 38
+  const responsive = size === 'md'
+  const unitStyle = responsive
+    ? { ['--k' as string]: 'clamp(22px, 3.3vw, 44px)' }
+    : { ['--k' as string]: '28px' }
 
   return (
     <div
-      className={cn('inline-block max-w-full overflow-x-auto pb-1', className)}
+      className={cn('w-full overflow-x-auto pb-1 scrollbar-thin', className)}
       role="group"
       aria-label="On-screen keyboard"
     >
-      <div className="flex flex-col gap-1" style={{ ['--k' as string]: `${unit}px` }}>
+      <div className="flex w-max flex-col gap-1" style={unitStyle}>
         {QWERTY_ROWS.map((row, ri) => (
           <div
             key={ri}
@@ -72,7 +89,6 @@ export function Keyboard({
                 highlighted={highlight?.includes(key.id) ?? false}
                 fingerBg={showFingers ? FINGER_BG[key.finger] : undefined}
                 onKeyClick={onKeyClick}
-                unit={unit}
               />
             ))}
           </div>
@@ -90,7 +106,6 @@ function KeyCap({
   highlighted,
   fingerBg,
   onKeyClick,
-  unit,
 }: {
   keyDef: KeyboardKey
   pressed: boolean
@@ -99,29 +114,30 @@ function KeyCap({
   highlighted: boolean
   fingerBg?: string
   onKeyClick?: (keyId: string) => void
-  unit: number
 }) {
   const isSpace = keyDef.id === 'space'
+  const isModifier = MODIFIER_IDS.has(keyDef.id)
   const style = {
     width: `calc(${keyDef.w} * var(--k) + ${(keyDef.w - 1) * 4}px)`,
-    height: unit * 0.92,
+    height: 'calc(var(--k) * 0.92)',
   }
 
   const classes = cn(
-    'flex items-center justify-center rounded-lg border text-[11px] font-bold uppercase transition-all duration-75 select-none',
+    'flex items-center justify-center rounded-[3px] border text-[10px] font-bold uppercase tracking-[0.05em] transition-all duration-75 select-none',
+    isModifier && 'text-ink-faint',
     fingerBg,
     heatClass(heat),
-    highlighted && 'ring-2 ring-primary ring-offset-1 ring-offset-bg',
+    highlighted && 'border-primary ring-1 ring-primary',
     pressed
       ? pressedCorrect
-        ? 'scale-95 border-primary bg-primary text-white shadow-inner'
-        : 'scale-95 border-danger bg-danger text-white shadow-inner'
-      : 'border-line bg-surface-2 text-ink-muted hover:border-primary/40 hover:text-ink',
+        ? 'scale-[0.97] border-success bg-success/25 text-success'
+        : 'scale-[0.97] border-danger bg-danger text-white'
+      : 'border-line bg-surface-2 hover:border-primary/50 hover:text-ink',
   )
 
   const content = isSpace ? '' : keyDef.label
 
-  if (onKeyClick && !isSpace) {
+  if (onKeyClick && !isSpace && !isModifier) {
     return (
       <button
         type="button"

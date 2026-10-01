@@ -16,14 +16,15 @@ interface UiState {
 export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
-      theme: 'system',
+      theme: 'dark',
       sidebarCollapsed: false,
       reducedMotion: false,
       setTheme: (theme) => set({ theme }),
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
       setReducedMotion: (reducedMotion) => set({ reducedMotion }),
     }),
-    { name: 'typesense-ui', partialize: (s) => ({ theme: s.theme, sidebarCollapsed: s.sidebarCollapsed }) },
+    // v2: palette overhaul reset the stored theme to the new dark default
+    { name: 'typesense-ui-v2', partialize: (s) => ({ theme: s.theme, sidebarCollapsed: s.sidebarCollapsed }) },
   ),
 )
 

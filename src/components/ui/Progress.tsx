@@ -29,7 +29,7 @@ export function Progress({
   const pct = Math.max(0, Math.min(100, value))
   return (
     <div
-      className={cn('h-2 w-full overflow-hidden rounded-full bg-surface-2', className)}
+      className={cn('h-1.5 w-full overflow-hidden bg-surface-2', className)}
       role="progressbar"
       aria-valuenow={Math.round(pct)}
       aria-valuemin={0}
@@ -37,7 +37,7 @@ export function Progress({
       aria-label={label ?? 'Progress'}
     >
       <motion.div
-        className={cn('h-full rounded-full', toneMap[tone], barClassName)}
+        className={cn('h-full', toneMap[tone], barClassName)}
         initial={reduced ? false : { width: 0 }}
         animate={{ width: `${pct}%` }}
         transition={{ duration: reduced ? 0 : 0.6, ease: [0.22, 1, 0.36, 1] }}

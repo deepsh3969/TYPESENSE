@@ -54,11 +54,11 @@ const Word = memo(function Word({ chars, states, start, active, current }: WordP
           <span
             key={i}
             className={cn(
-              'relative rounded-[3px]',
-              state === 'p' && 'text-ink-faint',
+              'relative transition-colors duration-75',
+              state === 'p' && 'text-ink-muted',
               state === 'c' && 'text-ink',
               state === 'w' && 'bg-danger/15 text-danger shadow-[inset_0_-2px_0_var(--color-danger)]',
-              isCaret && state !== 'w' && 'shadow-[inset_2px_0_0_var(--color-primary)] caret-blink',
+              isCaret && state !== 'w' && 'text-ink shadow-[inset_2px_0_0_var(--color-primary)] caret-blink',
             )}
           >
             {shown}
@@ -115,15 +115,11 @@ export function TypingArea({ slots, index, text, running, finished, className }:
     <div
       role="group"
       aria-label="Typing area"
-      className={cn(
-        'relative rounded-2xl border border-line bg-surface px-4 py-5 sm:px-6',
-        finished && 'border-line',
-        className,
-      )}
+      className={cn('relative rounded-[4px] border border-line bg-surface p-5 sm:p-7 xl:p-9', className)}
     >
       <div
         ref={scrollRef}
-        className="scrollbar-thin relative max-h-[168px] overflow-y-auto font-mono text-[19px] leading-[1.9] sm:text-[21px] sm:leading-[2]"
+        className="scrollbar-thin relative max-h-[240px] overflow-y-auto font-mono text-[21px] leading-[1.85] tracking-[0.01em] sm:text-[24px] sm:leading-[1.85] xl:max-h-[280px] xl:text-[27px]"
         aria-label="Text to type"
       >
         <div className="flex flex-wrap">
@@ -141,10 +137,10 @@ export function TypingArea({ slots, index, text, running, finished, className }:
         </div>
       </div>
       {!running && !finished && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-2xl bg-surface/70 backdrop-blur-[2px]">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center bg-gradient-to-t from-surface via-surface/85 to-transparent px-4 pt-8 pb-3">
           <span
             role="status"
-            className="rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary"
+            className="border border-primary/40 bg-primary/10 px-3 py-1.5 text-[11px] font-bold tracking-[0.14em] text-primary uppercase"
           >
             Start typing to begin
           </span>

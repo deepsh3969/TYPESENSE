@@ -48,11 +48,9 @@ export function SectionHeading({
 }) {
   return (
     <div className={cn(align === 'center' && 'mx-auto max-w-2xl text-center', className)}>
-      {eyebrow && (
-        <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">{eyebrow}</p>
-      )}
-      <h2 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">{title}</h2>
-      {description && <p className="mt-3 text-base leading-relaxed text-ink-muted">{description}</p>}
+      {eyebrow && <p className={cn('label mb-3', align === 'center' && 'label-accent')}>{eyebrow}</p>}
+      <h2 className="section-title text-ink">{title}</h2>
+      {description && <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted sm:text-base">{description}</p>}
     </div>
   )
 }
@@ -72,13 +70,14 @@ export function EmptyState({
 }) {
   return (
     <div
-      className={cn('flex flex-col items-center justify-center rounded-2xl border border-dashed border-line px-6 py-12 text-center', className)}
+      className={cn('flex flex-col items-center justify-center border border-dashed border-line px-6 py-14 text-center', className)}
       role="status"
     >
-      {icon && <div className="mb-3 text-ink-faint">{icon}</div>}
-      <p className="text-sm font-semibold text-ink">{title}</p>
-      {description && <p className="mt-1 max-w-sm text-sm text-ink-muted">{description}</p>}
-      {action && <div className="mt-4">{action}</div>}
+      {icon && <div className="mb-4 text-ink-faint">{icon}</div>}
+      <p className="label mb-2 text-ink-muted">Nothing here yet</p>
+      <p className="font-display text-lg font-bold text-ink">{title}</p>
+      {description && <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink-muted">{description}</p>}
+      {action && <div className="mt-5">{action}</div>}
     </div>
   )
 }

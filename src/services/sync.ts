@@ -1,4 +1,4 @@
-import { getSupabase, isSupabaseConfigured } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/authStore'
 import { useSessionsStore } from '@/stores/sessionsStore'
 import { useProgressStore } from '@/stores/progressStore'
@@ -6,9 +6,8 @@ import { useUserStore } from '@/stores/userStore'
 import type { LessonProgress } from '@/types/lesson'
 import type { TypingSession } from '@/types/typing'
 
-/** The Supabase user id for the signed-in user, or null in local mode. */
+/** The signed-in user id (Supabase or local device account), or null as guest. */
 export function currentUserId(): string | null {
-  if (!isSupabaseConfigured) return null
   return useAuthStore.getState().user?.id ?? null
 }
 

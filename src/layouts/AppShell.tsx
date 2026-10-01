@@ -5,28 +5,9 @@ import { Sidebar } from '@/components/layout/Sidebar'
 import { TopBar } from '@/components/layout/TopBar'
 import { MobileNav } from '@/components/layout/MobileNav'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { titleFor } from '@/lib/pageTitles'
 
 const DEFAULT_TITLE = typeof document !== 'undefined' ? document.title : 'TypeSense'
-
-const PAGE_TITLES: Record<string, string> = {
-  '/app': 'Dashboard',
-  '/app/test': 'Typing Test',
-  '/app/practice': 'Practice',
-  '/app/lessons': 'Lessons',
-  '/app/mistakes': 'Mistakes',
-  '/app/progress': 'Progress',
-  '/app/achievements': 'Achievements',
-  '/app/profile': 'Profile',
-  '/app/settings': 'Settings',
-}
-
-function titleFor(pathname: string): string {
-  const exact = PAGE_TITLES[pathname]
-  if (exact) return exact
-  if (pathname.startsWith('/app/practice/')) return 'Practice Drill'
-  if (pathname.startsWith('/app/lessons/')) return 'Lesson'
-  return 'Dashboard'
-}
 
 export function AppShell() {
   const location = useLocation()
@@ -50,8 +31,8 @@ export function AppShell() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar />
-        <main id="main" className="flex-1 px-4 pb-28 pt-6 sm:px-6 lg:pb-10">
-          <div className="mx-auto w-full max-w-6xl">
+        <main id="main" className="flex-1 px-4 pb-28 pt-6 sm:px-6 lg:pb-12 lg:pt-8 xl:px-10">
+          <div className="mx-auto w-full max-w-[1480px]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={location.pathname}

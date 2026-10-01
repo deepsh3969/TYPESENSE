@@ -31,13 +31,14 @@ export function Settings() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink">Settings</h1>
-        <p className="text-sm text-ink-muted">Appearance, goals and your data.</p>
+      <div className="border-b border-line pb-5">
+        <p className="label label-accent mb-2">Preferences</p>
+        <h1 className="section-title text-ink">Settings</h1>
+        <p className="mt-2 text-sm text-ink-muted">Appearance, goals and your data.</p>
       </div>
 
       <Card className="p-5">
-        <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+        <h2 className="flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-ink uppercase">
           {theme === 'dark' ? <Moon className="size-4 text-primary" /> : <Sun className="size-4 text-warning" />}
           Appearance
         </h2>
@@ -56,7 +57,7 @@ export function Settings() {
       </Card>
 
       <Card className="p-5">
-        <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+        <h2 className="flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-ink uppercase">
           <UserRound className="size-4 text-primary" />
           Practice preferences
         </h2>
@@ -90,7 +91,7 @@ export function Settings() {
             </Select>
           </Field>
         </div>
-        <div className="mt-4 rounded-xl border border-line p-3">
+        <div className="mt-4 rounded-[4px] border border-line p-3">
           <Switch
             checked
             onChange={() => undefined}
@@ -102,7 +103,7 @@ export function Settings() {
       </Card>
 
       <Card className="p-5">
-        <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+        <h2 className="flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-ink uppercase">
           <ShieldCheck className="size-4 text-success" />
           Data & privacy
         </h2>

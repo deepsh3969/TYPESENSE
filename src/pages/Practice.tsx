@@ -73,16 +73,19 @@ export function PracticeIndex() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink">Practice</h1>
-        <p className="text-sm text-ink-muted">Targeted drills generated from your own mistakes.</p>
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-5">
+        <div>
+          <p className="label label-accent mb-2">Drills</p>
+          <h1 className="section-title text-ink">Practice</h1>
+          <p className="mt-2 text-sm text-ink-muted">Targeted drills generated from your own mistakes.</p>
+        </div>
       </div>
 
       {focus && sessionsCount > 0 && (
-        <Card className="flex flex-wrap items-center justify-between gap-3 border-primary/30 bg-primary/5 p-5">
+        <Card className="flex flex-wrap items-center justify-between gap-3 border-primary/50 bg-primary/5 p-5">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-primary">Recommended now</p>
-            <h2 className="mt-1 text-lg font-extrabold text-ink">{plan?.headline}</h2>
+            <p className="label label-accent">Recommended now</p>
+            <h2 className="mt-1 font-display text-lg font-bold tracking-tight text-ink uppercase">{plan?.headline}</h2>
             <p className="mt-0.5 text-sm text-ink-muted">{focus.detail}</p>
           </div>
           <LinkButton to={focusLink}>Start recommended drill</LinkButton>
@@ -100,7 +103,7 @@ export function PracticeIndex() {
             >
               <span
                 className={cn(
-                  'mb-4 inline-flex w-fit rounded-xl p-2.5',
+                  'mb-4 inline-flex w-fit rounded-[4px] p-2.5',
                   ACCENT_RING[mode.accent] ?? ACCENT_RING.indigo,
                 )}
               >
@@ -216,10 +219,10 @@ export function PracticeDetail() {
           <ArrowLeft className="size-4" /> All practice modes
         </button>
         <Card className="p-6 sm:p-8">
-          <span className={cn('inline-flex rounded-xl p-2.5', ACCENT_RING[modeDef.accent] ?? ACCENT_RING.indigo)}>
+          <span className={cn('inline-flex rounded-[4px] p-2.5', ACCENT_RING[modeDef.accent] ?? ACCENT_RING.indigo)}>
             <Icon className="size-5" aria-hidden />
           </span>
-          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-ink">{modeDef.title}</h1>
+          <h1 className="mt-4 font-display text-2xl font-bold tracking-tight text-ink uppercase">{modeDef.title}</h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-muted">{modeDef.description}</p>
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -304,7 +307,7 @@ export function PracticeDetail() {
           >
             <ArrowLeft className="size-4" /> All practice modes
           </button>
-          <h1 className="mt-1 text-xl font-extrabold tracking-tight text-ink">{modeDef.title}</h1>
+          <h1 className="mt-1 font-display text-xl font-bold tracking-tight text-ink uppercase">{modeDef.title}</h1>
         </div>
         <Button variant="ghost" size="sm" onClick={another}>
           <RotateCcw className="size-4" /> New drill
@@ -316,7 +319,7 @@ export function PracticeDetail() {
 
       <Card className="p-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+          <h2 className="flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-ink uppercase">
             <KeyboardIcon className="size-4 text-primary" aria-hidden />
             {highlight.length > 0 ? 'Focus keys highlighted' : 'Keyboard'}
           </h2>

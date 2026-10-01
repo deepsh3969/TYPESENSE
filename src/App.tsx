@@ -7,8 +7,10 @@ import { mergeRemoteLessons, mergeRemoteSessions } from '@/services/sync'
 import { AppShell } from '@/layouts/AppShell'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { Landing } from '@/pages/Landing'
-import { AuthPage } from '@/pages/Auth'
+import { Login } from '@/pages/Login'
+import { Signup } from '@/pages/Signup'
 import { NotFound } from '@/pages/NotFound'
+import { isSupabaseConfigured } from '@/lib/supabase'
 
 // route-level code splitting keeps the landing + shell initial bundle small
 const Dashboard = lazy(() => import('@/pages/Dashboard').then((m) => ({ default: m.Dashboard })))
@@ -50,9 +52,12 @@ export default function App() {
   // flip profile mode + pull remote data when a session appears / disappears
   useEffect(() => {
     if (authUser) {
-      setProfile({ mode: 'cloud' })
-      void mergeRemoteSessions()
-      void mergeRemoteLessons()
+      setProfile({ mode: isSupabaseConfigured ? 'cloud' : 'local' })
+      if (authUser.displayName) setProfile({ displayName: authUser.displayName })
+      if (isSupabaseConfigured) {
+        void mergeRemoteSessions()
+        void mergeRemoteLessons()
+      }
     } else {
       setProfile({ mode: 'local' })
     }
@@ -70,7 +75,8 @@ export default function App() {
       >
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<AuthPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/app" element={<AppShell />}>
             <Route index element={<Dashboard />} />
             <Route path="test" element={<TypingTest />} />

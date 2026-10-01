@@ -17,6 +17,7 @@ export interface StatsBarProps {
   className?: string
 }
 
+/** Unified editorial metrics strip — one bordered surface, divided cells. */
 export function StatsBar({ live, progressLabel, className }: StatsBarProps) {
   const time = live.remainingMs !== null ? fmt(live.remainingMs) : fmt(live.elapsedMs)
   const timeLabel = live.remainingMs !== null ? 'Time left' : 'Time'
@@ -24,7 +25,7 @@ export function StatsBar({ live, progressLabel, className }: StatsBarProps) {
 
   return (
     <div
-      className={cn('grid grid-cols-2 gap-2 sm:grid-cols-5', className)}
+      className={cn('grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-5', className)}
       role="status"
       aria-live="off"
     >
@@ -56,10 +57,12 @@ export function StatsBar({ live, progressLabel, className }: StatsBarProps) {
         className="col-span-2 sm:col-span-1"
       />
       {(progressLabel || live.progress > 0) && (
-        <div className="col-span-2 sm:col-span-5">
-          <Progress value={live.progress} className="h-1.5" />
+        <div className="col-span-2 bg-surface px-4 py-2.5 sm:col-span-5">
+          <Progress value={live.progress} className="h-1" />
           {progressLabel && (
-            <p className="mt-1 text-center text-[11px] font-medium text-ink-faint">{progressLabel}</p>
+            <p className="mt-1.5 text-center text-[11px] font-semibold tracking-[0.12em] text-ink-faint uppercase">
+              {progressLabel}
+            </p>
           )}
         </div>
       )}
@@ -85,28 +88,21 @@ function StatTile({
   className?: string
 }) {
   return (
-    <div
-      className={cn(
-        'flex flex-col items-center justify-center rounded-xl border border-line bg-surface px-2 py-2.5',
-        tone === 'danger' && 'border-danger/40 bg-danger/5',
-        tone === 'warning' && 'border-warning/50 bg-warning/10',
-        className,
-      )}
-    >
-      <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-ink-faint">
+    <div className={cn('flex flex-col items-center justify-center bg-surface px-3 py-3', className)}>
+      <span className="label flex items-center gap-1">
         {icon}
         {label}
       </span>
       <span
         className={cn(
-          'tabular-nums font-extrabold leading-tight text-ink',
-          big ? 'text-3xl text-primary' : 'text-xl',
+          'num mt-1 leading-none font-bold text-ink',
+          big ? 'text-4xl text-primary sm:text-5xl' : 'text-2xl sm:text-3xl',
           tone === 'danger' && 'text-danger',
           tone === 'warning' && 'text-warning',
         )}
       >
         {value}
-        {suffix && <span className="text-sm font-bold text-ink-faint">{suffix}</span>}
+        {suffix && <span className="text-base font-semibold text-ink-faint">{suffix}</span>}
       </span>
     </div>
   )

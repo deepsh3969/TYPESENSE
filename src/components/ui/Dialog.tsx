@@ -68,7 +68,7 @@ export function Dialog({
             role="dialog"
             aria-modal="true"
             aria-label={title}
-            className={cn('relative w-full max-w-lg rounded-2xl border border-line bg-surface p-6 shadow-2xl', className)}
+            className={cn('relative w-full max-w-lg rounded-[6px] border border-line bg-surface p-6 shadow-2xl', className)}
             initial={{ opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}

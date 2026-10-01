@@ -52,7 +52,7 @@ export function ToastStack({ toasts, onDismiss }: { toasts: ToastData[]; onDismi
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={reduced ? { opacity: 0 } : { opacity: 0, x: 40, scale: 0.96 }}
               transition={{ type: 'spring', stiffness: 380, damping: 28 }}
-              className="pointer-events-auto flex items-start gap-3 rounded-xl border border-line bg-surface p-3 shadow-xl"
+              className="pointer-events-auto flex items-start gap-3 rounded-[4px] border border-line bg-surface p-3 shadow-xl"
             >
               <span
                 className={cn(

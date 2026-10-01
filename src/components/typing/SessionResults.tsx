@@ -46,36 +46,37 @@ export function SessionResults({
         {m.errors} errors.
       </p>
       {/* header + rewards */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
         <div>
-          <h2 className="text-xl font-extrabold tracking-tight text-ink">{title}</h2>
-          <p className="text-sm text-ink-muted">
+          <p className="label label-accent mb-2">Session report</p>
+          <h2 className="section-title text-ink">{title}</h2>
+          <p className="mt-2 text-sm text-ink-muted">
             {Math.round(m.elapsedMs / 1000)}s · {m.correctChars} correct characters
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {outcome && (
-            <Pill className="bg-primary/10 text-primary">
+            <Pill className="border border-primary/50 bg-primary/10 text-primary">
               <Zap className="size-3.5" /> +{outcome.xp} XP
             </Pill>
           )}
           {outcome?.levelUp && (
-            <Pill className="bg-accent/15 text-accent">
+            <Pill className="border border-accent/50 bg-accent/15 text-accent">
               <Sparkles className="size-3.5" /> Level {outcome.levelUp.to}
             </Pill>
           )}
           {outcome && outcome.streak > 1 && (
-            <Pill className="bg-warning/15 text-warning">Streak {outcome.streak} days</Pill>
+            <Pill className="border border-warning/50 bg-warning/15 text-warning">Streak {outcome.streak} days</Pill>
           )}
         </div>
       </div>
 
       {outcome && outcome.unlocked.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-accent/30 bg-accent/5 p-3">
+        <div className="flex flex-wrap items-center gap-2 border border-accent/40 bg-accent/5 p-3">
           <Award className="size-4 text-accent" aria-hidden />
-          <span className="text-sm font-semibold text-ink">Achievements unlocked:</span>
+          <span className="label text-ink">Achievements unlocked</span>
           {outcome.unlocked.map((id) => (
-            <Pill key={id} className="bg-accent/15 text-accent">
+            <Pill key={id} className="border border-accent/50 bg-accent/15 text-accent">
               {ACHIEVEMENT_MAP[id]?.title ?? id}
             </Pill>
           ))}
@@ -94,9 +95,9 @@ export function SessionResults({
 
       {/* timeline */}
       <Card className="p-4">
-        <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-sm font-bold text-ink">Speed timeline</h3>
-          <span className="text-xs text-ink-faint">avg {m.avgKeyDelayMs}ms per key</span>
+        <div className="mb-3 flex items-center justify-between border-b border-line pb-3">
+          <h3 className="label text-ink-muted">Speed timeline</h3>
+          <span className="label">avg {m.avgKeyDelayMs}ms per key</span>
         </div>
         <TimelineChart samples={session.timeline} fallbackWpm={m.wpm} />
       </Card>
@@ -104,19 +105,19 @@ export function SessionResults({
       {/* problem keys from this session */}
       {keys.length > 0 && (
         <Card className="p-4">
-          <h3 className="text-sm font-bold text-ink">Weakest keys this session</h3>
+          <h3 className="label text-ink-muted">Weakest keys this session</h3>
           <div className="mt-3 flex flex-wrap gap-2">
             {keys.map((k) => (
               <span
                 key={k.key}
                 className={cn(
-                  'inline-flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-sm font-bold',
+                  'inline-flex items-center gap-2 rounded-[3px] border px-2.5 py-1.5 text-sm font-bold',
                   k.score < 88
-                    ? 'border-danger/40 bg-danger/10 text-danger'
-                    : 'border-warning/40 bg-warning/10 text-warning',
+                    ? 'border-danger/50 bg-danger/10 text-danger'
+                    : 'border-warning/50 bg-warning/10 text-warning',
                 )}
               >
-                <kbd className="rounded border border-current/30 px-1.5 font-mono text-xs uppercase">
+                <kbd className="rounded-[2px] border border-current/40 px-1.5 font-mono text-xs uppercase">
                   {k.key === 'space' ? '␣' : k.key}
                 </kbd>
                 {Math.round(k.accuracy * 100)}%
@@ -128,10 +129,11 @@ export function SessionResults({
 
       {/* learning plan nudge */}
       {plan && plan.focus.length > 0 && onPlanAction && (
-        <Card className="border-primary/30 p-4">
+        <Card className="border-primary/50 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h3 className="text-sm font-bold text-ink">Next up — {plan.headline}</h3>
+              <p className="label label-accent">What you should practice</p>
+              <h3 className="mt-1 font-display text-base font-bold tracking-tight text-ink uppercase">{plan.headline}</h3>
               <p className="mt-0.5 text-xs text-ink-muted">{plan.focus[0].detail}</p>
             </div>
             <Button size="sm" onClick={() => onPlanAction(plan.focus[0].action, plan.focus[0].target)}>

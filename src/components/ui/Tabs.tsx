@@ -40,7 +40,7 @@ export function Tabs({
     <div className={className}>
       <div
         role="tablist"
-        className={cn('inline-flex flex-wrap items-center gap-1 rounded-xl border border-line bg-surface-2 p-1', listClassName)}
+        className={cn('inline-flex flex-wrap items-center gap-1 rounded-[3px] border border-line bg-surface-2 p-1', listClassName)}
       >
         {items.map((item) => {
           const selected = item.id === activeItem?.id
@@ -63,14 +63,14 @@ export function Tabs({
                 }
               }}
               className={cn(
-                'relative rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-colors',
+                'relative rounded-[2px] px-3.5 py-1.5 text-xs font-bold tracking-[0.06em] uppercase transition-colors',
                 selected ? 'text-white' : 'text-ink-muted hover:text-ink',
               )}
             >
               {selected && (
                 <motion.span
                   layoutId={`${autoId}-active`}
-                  className="absolute inset-0 rounded-lg bg-primary"
+                  className="absolute inset-0 rounded-[2px] bg-primary"
                   transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 400, damping: 32 }}
                 />
               )}

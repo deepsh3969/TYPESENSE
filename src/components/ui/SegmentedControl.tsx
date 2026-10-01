@@ -33,7 +33,7 @@ export function SegmentedControl<T extends string>({
     <div
       role="radiogroup"
       aria-label={ariaLabel}
-      className={cn('inline-flex w-full max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-line bg-surface-2 p-1', className)}
+      className={cn('inline-flex w-full max-w-full items-center gap-1 overflow-x-auto border border-line bg-surface-2 p-1', className)}
     >
       {options.map((option, index) => {
         const selected = index === activeIndex
@@ -46,14 +46,14 @@ export function SegmentedControl<T extends string>({
             disabled={option.disabled}
             onClick={() => onChange(option.value)}
             className={cn(
-              'relative flex-1 whitespace-nowrap rounded-lg font-semibold transition-colors disabled:opacity-40',
-              size === 'sm' ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-sm',
+              'relative flex-1 whitespace-nowrap rounded-[2px] font-bold uppercase tracking-[0.06em] transition-colors disabled:opacity-40',
+              size === 'sm' ? 'px-2.5 py-1 text-[10px]' : 'px-3 py-1.5 text-[11px]',
               selected ? 'text-white' : 'text-ink-muted hover:text-ink',
             )}
           >
             {selected && (
               <motion.span
-                className="absolute inset-0 rounded-lg bg-primary shadow-sm"
+                className="absolute inset-0 rounded-[2px] bg-primary"
                 layoutId={`${autoId}-thumb`}
                 transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 500, damping: 38 }}
               />

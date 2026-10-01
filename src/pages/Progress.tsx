@@ -50,10 +50,11 @@ export function ProgressPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-5">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink">Progress</h1>
-          <p className="text-sm text-ink-muted">Measured improvement over {summary.sessions} sessions in view.</p>
+          <p className="label label-accent mb-2">Analytics</p>
+          <h1 className="section-title text-ink">Progress</h1>
+          <p className="mt-2 text-sm text-ink-muted">Measured improvement over {summary.sessions} sessions in view.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegmentedControl
@@ -99,14 +100,14 @@ export function ProgressPage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-ink">Speed & accuracy trend</h2>
+            <h2 className="text-xs font-bold tracking-[0.14em] text-ink uppercase">Speed & accuracy trend</h2>
             <span className="text-[11px] text-ink-faint">dotted = accuracy</span>
           </div>
           <TrendChart data={daily} />
         </Card>
         <Card className="p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-ink">Daily practice</h2>
+            <h2 className="text-xs font-bold tracking-[0.14em] text-ink uppercase">Daily practice</h2>
             <span className="text-[11px] text-ink-faint">minutes per day</span>
           </div>
           <MinutesBars data={daily} />
@@ -115,7 +116,7 @@ export function ProgressPage() {
 
       <Card className="overflow-hidden">
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
-          <h2 className="text-sm font-bold text-ink">Session history</h2>
+          <h2 className="text-xs font-bold tracking-[0.14em] text-ink uppercase">Session history</h2>
           <span className="text-xs text-ink-faint">newest first</span>
         </div>
         <div className="overflow-x-auto">
@@ -142,7 +143,7 @@ export function ProgressPage() {
                     </span>
                   </td>
                   <td className="px-4 py-2.5">
-                    <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-bold uppercase', modeStyle(s.source))}>
+                    <span className={cn('rounded-[3px] border border-line px-2 py-0.5 text-[11px] font-bold uppercase', modeStyle(s.source))}>
                       {s.source}
                       {s.practiceMode ? `: ${s.practiceMode}` : ''}
                     </span>

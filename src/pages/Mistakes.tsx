@@ -86,13 +86,13 @@ export function Mistakes() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between text-xs font-semibold text-ink-muted">
                     <span>{k.attempts} attempts · {k.errors} errors</span>
-                    <span className={cn('rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase', STATUS_STYLE[k.status])}>
+                    <span className={cn('rounded-[3px] border px-2 py-0.5 text-[10px] font-bold uppercase', STATUS_STYLE[k.status])}>
                       {k.status.replace('-', ' ')}
                     </span>
                   </div>
-                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface-2">
+                  <div className="mt-2 h-1.5 overflow-hidden bg-surface-2">
                     <div
-                      className={cn('h-full rounded-full', k.score < 88 ? 'bg-danger' : k.score < 94 ? 'bg-warning' : 'bg-success')}
+                      className={cn('h-full', k.score < 88 ? 'bg-danger' : k.score < 94 ? 'bg-warning' : 'bg-success')}
                       style={{ width: `${Math.max(4, Math.round(k.accuracy * 100))}%` }}
                     />
                   </div>
@@ -193,8 +193,8 @@ export function Mistakes() {
                       <p className="text-[11px] text-ink-faint">{Math.round(share)}% of errors</p>
                     </div>
                   </div>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface-2">
-                    <div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(2, share)}%` }} />
+                  <div className="mt-3 h-1.5 overflow-hidden bg-surface-2">
+                    <div className="h-full bg-primary" style={{ width: `${Math.max(2, share)}%` }} />
                   </div>
                   <p className="mt-1.5 text-[11px] text-ink-faint">
                     {Math.round((v.corrected / v.count) * 100)}% caught and fixed by you
@@ -210,13 +210,14 @@ export function Mistakes() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-5">
         <div>
-          <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight text-ink">
-            <Bug className="size-6 text-danger" aria-hidden />
+          <p className="label label-accent mb-2">Diagnostics</p>
+          <h1 className="section-title flex items-center gap-3 text-ink">
+            <Bug className="size-7 text-danger" aria-hidden />
             Mistake Lab
           </h1>
-          <p className="text-sm text-ink-muted">
+          <p className="mt-2 text-sm text-ink-muted">
             Every keystroke classified. {totalErrors} errors analysed in the last 30 days.
           </p>
         </div>
@@ -227,9 +228,9 @@ export function Mistakes() {
         </div>
       </div>
 
-      <Card className="p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+      <Card className="p-4 sm:p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
+          <h2 className="flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-ink uppercase">
             <KeyRound className="size-4 text-primary" aria-hidden />
             Keyboard heat — accuracy by key
           </h2>
@@ -239,7 +240,7 @@ export function Mistakes() {
             <span className="size-2.5 rounded-sm bg-surface-2" /> fine
           </span>
         </div>
-        <Keyboard heat={heat} size="sm" className="w-full" />
+        <Keyboard heat={heat} size="md" className="w-full" />
       </Card>
 
       <Tabs items={tabs} defaultValue="keys" />

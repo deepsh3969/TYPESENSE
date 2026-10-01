@@ -42,8 +42,10 @@ VITE_ENABLE_GOOGLE_AUTH=false # optional Google OAuth button
 ```
 
 When these are absent, **every Supabase code path is inert**: the SDK chunk is
-never even downloaded, no fake "signed-in" state is shown, and the TopBar hides
-the account UI. Guest-first is the default; sync is opt-in.
+never even downloaded. Accounts still work — `/login` and `/signup` create a
+**local device account** (password stored only as a PBKDF2-SHA256 hash, session
+lives in `sessionStorage`) — while cloud sync stays opt-in. Guest mode remains
+the default; no sign-up is ever forced.
 
 ## Metric formulas
 
@@ -111,8 +113,9 @@ Key decisions:
      `user_settings` with **RLS enabled on every table** (owner-only) and a
      `handle_new_user()` trigger that seeds the profile row.
 3. Copy the URL + anon key into `.env.local`.
-4. Enable the **Email** auth provider (magic links). Optionally enable Google
-   and set `VITE_ENABLE_GOOGLE_AUTH=true`.
+4. Enable the **Email** provider with password sign-in (a magic-link fallback
+   and optional Google button are also offered). Set
+   `VITE_ENABLE_GOOGLE_AUTH=true` to show the Google button.
 
 Signing in pulls remote sessions/lessons into the local store; every finished
 session, profile change and lesson result is upserted (fire-and-forget — sync
@@ -136,13 +139,14 @@ provides the rewrite to `index.html`.
 npm test
 ```
 
-110 tests across 9 files:
+114 tests across 10 files:
 
 - `src/typing/*.test.ts` — engine (23), metric formulas (12), error classes (12)
 - `src/analytics/*.test.ts` — problem keys, patterns, summaries, plan (16)
 - `src/lessons/lessons.test.ts` — unlock chain, stage evaluation, generators (14)
 - `src/gamification/*.test.ts` — XP levels (8), streaks/goals/achievements (17)
 - `src/test/app.smoke.test.tsx` — renders every route incl. lazy chunks (6)
+- `src/test/auth.pages.test.tsx` — login/signup forms + client-side validation (4)
 - `src/test/error-boundary.test.tsx` — crash recovery fallback (2)
 
 `npm run test:coverage` reports ~86% statements / ~90% lines on the core

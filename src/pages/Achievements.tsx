@@ -18,15 +18,16 @@ export function Achievements() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight text-ink">
-          <Trophy className="size-6 text-accent" aria-hidden />
+      <div className="border-b border-line pb-5">
+        <p className="label label-accent mb-2">Milestones</p>
+        <h1 className="section-title flex items-center gap-3 text-ink">
+          <Trophy className="size-7 text-accent" aria-hidden />
           Achievements
         </h1>
-        <p className="text-sm text-ink-muted">
+        <p className="mt-2 text-sm text-ink-muted">
           {count} of {ACHIEVEMENTS.length} unlocked — every one earned through real practice.
         </p>
-        <Progress value={(count / ACHIEVEMENTS.length) * 100} className="mt-3 max-w-md" />
+        <Progress value={(count / ACHIEVEMENTS.length) * 100} className="mt-4 max-w-md" />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -39,8 +40,8 @@ export function Achievements() {
             >
               <span
                 className={cn(
-                  'flex size-11 shrink-0 items-center justify-center rounded-xl',
-                  got ? 'bg-white/15' : 'bg-surface-2 text-ink-faint',
+                  'flex size-11 shrink-0 items-center justify-center rounded-[3px]',
+                  got ? 'bg-primary/15 text-primary' : 'bg-surface-2 text-ink-faint',
                 )}
               >
                 {got ? <Trophy className="size-5" /> : <Lock className="size-4.5" />}
@@ -48,7 +49,7 @@ export function Achievements() {
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className={cn('text-sm font-bold', got ? 'text-ink' : 'text-ink-muted')}>{def.title}</h2>
-                  <span className="rounded-full bg-surface-2 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ink-muted">
+                  <span className="rounded-[2px] bg-surface-2 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-ink-muted uppercase">
                     {TIER_LABEL[def.tier]}
                   </span>
                 </div>

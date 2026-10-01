@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowRight,
@@ -8,6 +8,7 @@ import {
   Target,
   Timer,
   Trophy,
+  X,
   Zap,
 } from 'lucide-react'
 import { Card, LinkButton, StatCard, Pill } from '@/components/ui'
@@ -17,6 +18,7 @@ import { dailySeries } from '@/analytics/summarize'
 import { useUserStore } from '@/stores/userStore'
 import { useSessionsStore } from '@/stores/sessionsStore'
 import { useProgressStore } from '@/stores/progressStore'
+import { useAuthStore } from '@/stores/authStore'
 import { goalProgress, displayedStreak } from '@/gamification/streaks'
 import { levelFromXp } from '@/gamification/levels'
 import { recommendedLesson, lessonStatus } from '@/lessons'
@@ -43,6 +45,8 @@ export function Dashboard() {
   const user = useUserStore((s) => s.data)
   const sessions = useSessionsStore((s) => s.sessions)
   const lessonProgress = useProgressStore((s) => s.lessonProgress)
+  const authUser = useAuthStore((s) => s.user)
+  const [guestDismissed, setGuestDismissed] = useState(false)
   const { summary, plan } = useAnalytics(7)
 
   const streak = displayedStreak(user.streak)
@@ -55,43 +59,64 @@ export function Dashboard() {
   const greeting = hour < 5 ? 'Burning the midnight oil' : hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* header */}
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-sm font-semibold text-primary">{greeting}</p>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink">
-            {user.profile.displayName}
-            <span className="ml-2 align-middle text-sm font-bold text-ink-faint">
-              Level {level.level} · {level.title}
-            </span>
-          </h1>
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
+        <div className="min-w-0">
+          <p className="label label-accent mb-2">{greeting}</p>
+          <h1 className="section-title truncate text-ink">{user.profile.displayName}</h1>
+          <p className="mt-2 text-xs font-bold tracking-[0.12em] text-ink-faint uppercase">
+            Level {level.level} · {level.title}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Pill className={streak > 0 ? 'bg-warning/10 text-warning' : 'bg-surface-2 text-ink-faint'}>
+          <Pill className={streak > 0 ? 'border border-warning/50 bg-warning/10 text-warning' : 'bg-surface-2 text-ink-faint'}>
             <Flame className={cn('size-3.5', streak > 0 && 'text-warning')} /> {streak} day streak
           </Pill>
-          <Pill className="bg-primary/10 text-primary">
+          <Pill className="border border-primary/50 bg-primary/10 text-primary">
             {Math.round(user.dailyGoal.minutes)}/{user.dailyGoal.goalMinutes} min today
           </Pill>
         </div>
       </div>
 
+      {/* gentle guest prompt */}
+      {!authUser && !guestDismissed && (
+        <div className="flex flex-wrap items-center gap-3 border border-line bg-surface px-4 py-3">
+          <span className="label label-accent">Guest mode</span>
+          <p className="min-w-0 flex-1 text-sm text-ink-muted">
+            Create an account to save your progress — streaks, XP and sessions follow you.
+          </p>
+          <LinkButton to="/signup" size="sm" variant="secondary">
+            Create account
+          </LinkButton>
+          <button
+            type="button"
+            onClick={() => setGuestDismissed(true)}
+            className="p-1 text-ink-faint transition-colors hover:text-ink"
+            aria-label="Dismiss"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+      )}
+
       {sessions.length === 0 && (
-        <Card className="relative overflow-hidden border-primary/30 p-6 sm:p-8">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(79,70,229,0.14),transparent_60%)]" />
+        <div className="relative overflow-hidden border border-primary/40 bg-surface p-6 sm:p-10">
+          <div className="wire-grid absolute inset-0 opacity-60" aria-hidden />
+          <div
+            className="absolute -top-24 -left-16 size-80 rounded-full bg-primary/15 blur-[100px]"
+            aria-hidden
+          />
           <div className="relative max-w-xl">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
-              <Zap className="size-3.5" /> 3-minute setup
-            </span>
-            <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-ink">
+            <span className="label label-accent">3-minute setup</span>
+            <h2 className="mt-3 font-display text-2xl leading-tight font-bold tracking-tight text-ink uppercase sm:text-3xl">
               Let&apos;s find out how you really type
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-ink-muted">
+            <p className="mt-3 text-sm leading-relaxed text-ink-muted">
               Take one test. We&apos;ll classify every mistake, score every key and build your personal
               improvement plan from the result — then you practice only what matters.
             </p>
-            <div className="mt-5 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-3">
               <LinkButton to="/app/test">
                 <Timer className="size-4" /> Take your first test
               </LinkButton>
@@ -100,7 +125,7 @@ export function Dashboard() {
               </LinkButton>
             </div>
           </div>
-        </Card>
+        </div>
       )}
 
       {/* quick stats */}
@@ -116,8 +141,8 @@ export function Dashboard() {
         <Card className="p-5 lg:col-span-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-primary">Today&apos;s focus</p>
-              <h2 className="mt-1 text-lg font-extrabold text-ink">
+              <p className="label label-accent">Today&apos;s focus</p>
+              <h2 className="mt-1 font-display text-lg font-bold tracking-tight text-ink uppercase">
                 {plan ? plan.headline : 'Complete a test to unlock your plan'}
               </h2>
             </div>
@@ -134,7 +159,7 @@ export function Dashboard() {
                   <li key={f.id}>
                     <Link
                       to={ACTION_LINK[f.action]}
-                      className="group flex items-center gap-3 rounded-xl border border-line bg-surface-2/50 p-3 transition-colors hover:border-primary/40 hover:bg-primary/5"
+                      className="group flex items-center gap-3 rounded-[3px] border border-line bg-surface-2/50 p-3 transition-colors hover:border-primary/60 hover:bg-primary/5"
                     >
                       <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                         <Icon className="size-4" aria-hidden />
@@ -159,7 +184,7 @@ export function Dashboard() {
 
         {/* daily goal */}
         <Card className="flex flex-col items-center justify-center p-5 text-center">
-          <p className="text-xs font-bold uppercase tracking-wider text-ink-faint">Daily goal</p>
+          <p className="label">Daily goal</p>
           <div className="relative my-4">
             <div className="size-28 rounded-full border-[10px] border-surface-2" aria-hidden>
               <svg viewBox="0 0 100 100" className="size-full -rotate-90">
@@ -176,7 +201,7 @@ export function Dashboard() {
               </svg>
             </div>
             <span className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-extrabold text-ink">{Math.round(goalPct)}%</span>
+              <span className="num text-2xl font-bold text-ink">{Math.round(goalPct)}%</span>
               <span className="text-[11px] text-ink-faint">
                 {Math.round(user.dailyGoal.minutes)}/{user.dailyGoal.goalMinutes}m
               </span>
@@ -196,9 +221,9 @@ export function Dashboard() {
       <div className="grid gap-4 lg:grid-cols-3">
         {/* weekly trend */}
         <Card className="p-4 lg:col-span-2">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-ink">Last 7 days</h2>
-            <Link to="/app/progress" className="text-xs font-semibold text-primary hover:underline">
+          <div className="mb-3 flex items-center justify-between border-b border-line pb-3">
+            <h2 className="label text-ink-muted">Last 7 days</h2>
+            <Link to="/app/progress" className="label transition-colors hover:text-primary">
               Full progress →
             </Link>
           </div>
@@ -209,11 +234,11 @@ export function Dashboard() {
         <div className="space-y-4">
           {rec && (
             <Card className="p-4">
-              <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+              <h2 className="flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-ink uppercase">
                 <GraduationCap className="size-4 text-primary" aria-hidden />
                 Recommended lesson
               </h2>
-              <p className="mt-2 font-bold text-ink">{rec.title}</p>
+              <p className="mt-2 font-display font-bold text-ink">{rec.title}</p>
               <p className="mt-1 line-clamp-2 text-xs text-ink-muted">{rec.objective}</p>
               <LinkButton to={`/app/lessons/${rec.id}`} size="sm" className="mt-3 w-full">
                 {lessonStatus(rec, lessonProgress) === 'in-progress' ? 'Continue' : 'Start'} lesson
@@ -223,11 +248,11 @@ export function Dashboard() {
 
           <Card className="p-4">
             <div className="flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+              <h2 className="flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-ink uppercase">
                 <KeyboardIcon className="size-4 text-danger" aria-hidden />
                 Weakest keys
               </h2>
-              <Link to="/app/mistakes" className="text-xs font-semibold text-primary hover:underline">
+              <Link to="/app/mistakes" className="label transition-colors hover:text-primary">
                 Mistake Lab →
               </Link>
             </div>
@@ -257,8 +282,8 @@ export function Dashboard() {
           {sessions.length > 0 && (
             <Card className="p-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-bold text-ink">Recent tests</h2>
-                <Link to="/app/progress" className="text-xs font-semibold text-primary hover:underline">
+                <h2 className="label text-ink-muted">Recent tests</h2>
+                <Link to="/app/progress" className="label transition-colors hover:text-primary">
                   History →
                 </Link>
               </div>

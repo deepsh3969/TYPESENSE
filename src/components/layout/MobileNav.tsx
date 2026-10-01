@@ -16,14 +16,16 @@ export function MobileNav() {
               end={item.end}
               className={({ isActive }) =>
                 cn(
-                  'flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 py-2 text-[10px] font-semibold transition-colors',
-                  isActive ? 'text-primary' : 'text-ink-faint',
+                  'relative flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 py-2 text-[10px] font-bold tracking-[0.06em] uppercase transition-colors',
+                  isActive
+                    ? 'text-primary before:absolute before:top-0 before:h-[3px] before:w-10 before:bg-primary before:content-[""]'
+                    : 'text-ink-faint',
                 )
               }
             >
               <span
                 className={cn(
-                  'flex h-7 w-12 items-center justify-center rounded-full transition-colors',
+                  'flex h-7 w-12 items-center justify-center rounded-[3px] transition-colors',
                   '[[aria-current=page]_&]:bg-primary/10',
                 )}
               >

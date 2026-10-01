@@ -45,7 +45,7 @@ const k = (id: string, finger: Finger, row: KeyboardKey['row'], w = 1, label = i
 })
 
 export const QWERTY_ROWS: KeyboardKey[][] = [
-  // row 0 — numbers
+  // row 0 — numbers + backspace
   [
     k('`', 'lPinky', 0, 1, '`', '~'),
     k('1', 'lPinky', 0, 1, '1', '!'),
@@ -60,9 +60,11 @@ export const QWERTY_ROWS: KeyboardKey[][] = [
     k('0', 'rPinky', 0, 1, '0', ')'),
     k('-', 'rPinky', 0, 1, '-', '_'),
     k('=', 'rPinky', 0, 1, '=', '+'),
+    k('backspace', 'rPinky', 0, 2, 'backspace'),
   ],
-  // row 1 — qwerty
+  // row 1 — tab + qwerty + backslash
   [
+    k('tab', 'lPinky', 1, 1.5, 'tab'),
     k('q', 'lPinky', 1),
     k('w', 'lRing', 1),
     k('e', 'lMiddle', 1),
@@ -75,9 +77,11 @@ export const QWERTY_ROWS: KeyboardKey[][] = [
     k('p', 'rPinky', 1),
     k('[', 'rPinky', 1, 1, '[', '{'),
     k(']', 'rPinky', 1, 1, ']', '}'),
+    k('\\', 'rPinky', 1, 1.5, '\\', '|'),
   ],
-  // row 2 — home
+  // row 2 — caps + home + enter
   [
+    k('caps', 'lPinky', 2, 1.75, 'caps'),
     k('a', 'lPinky', 2),
     k('s', 'lRing', 2),
     k('d', 'lMiddle', 2),
@@ -89,9 +93,11 @@ export const QWERTY_ROWS: KeyboardKey[][] = [
     k('l', 'rRing', 2),
     k(';', 'rPinky', 2, 1, ';', ':'),
     k("'", 'rPinky', 2, 1, "'", '"'),
+    k('enter', 'rPinky', 2, 2.25, 'enter'),
   ],
-  // row 3 — bottom
+  // row 3 — shift + bottom + shift
   [
+    k('shift-left', 'lPinky', 3, 2.25, 'shift'),
     k('z', 'lPinky', 3),
     k('x', 'lRing', 3),
     k('c', 'lMiddle', 3),
@@ -102,9 +108,17 @@ export const QWERTY_ROWS: KeyboardKey[][] = [
     k(',', 'rMiddle', 3, 1, ',', '<'),
     k('.', 'rRing', 3, 1, '.', '>'),
     k('/', 'rPinky', 3, 1, '/', '?'),
+    k('shift-right', 'rPinky', 3, 2.75, 'shift'),
   ],
-  // row 4 — space
-  [k('space', 'thumb', 4, 10, 'space')],
+  // row 4 — ctrl / alt / space / alt / ctrl
+  [
+    k('ctrl-left', 'lPinky', 4, 1.5, 'ctrl'),
+    k('meta', 'lRing', 4, 1.5, 'win'),
+    k('alt-left', 'thumb', 4, 1.5, 'alt'),
+    k('space', 'thumb', 4, 9, 'space'),
+    k('alt-right', 'thumb', 4, 1.5, 'alt'),
+    k('ctrl-right', 'rPinky', 4, 1.5, 'ctrl'),
+  ],
 ]
 
 export const KEY_INDEX: ReadonlyMap<string, KeyboardKey> = new Map(

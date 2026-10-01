@@ -2,7 +2,7 @@ import { forwardRef, useId, type InputHTMLAttributes, type LabelHTMLAttributes, 
 import { cn } from '@/lib/utils'
 
 const fieldClass =
-  'w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-60'
+  'w-full rounded-[3px] border border-line bg-surface-2 px-3.5 py-3 text-sm text-ink placeholder:text-ink-faint transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30 disabled:opacity-60'
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function Input(
   { className, ...props },
@@ -88,7 +88,7 @@ export function Switch({
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={cn(
-        'flex w-full items-center justify-between gap-4 rounded-xl px-1 py-1.5 text-left transition-colors',
+        'flex w-full items-center justify-between gap-4 rounded-[3px] px-1 py-1.5 text-left transition-colors',
         disabled && 'opacity-50',
       )}
     >

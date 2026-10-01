@@ -38,16 +38,17 @@ export function Profile() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink">Profile</h1>
-        <p className="text-sm text-ink-muted">Your identity, stats and everything you have earned.</p>
+      <div className="border-b border-line pb-5">
+        <p className="label label-accent mb-2">Account</p>
+        <h1 className="section-title text-ink">Profile</h1>
+        <p className="mt-2 text-sm text-ink-muted">Your identity, stats and everything you have earned.</p>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
         {/* identity */}
         <Card className="p-5">
           <div className="flex items-center gap-4">
-            <span className="flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-3xl">
+            <span className="flex size-16 items-center justify-center rounded-[4px] border border-primary/40 bg-primary/10 text-3xl">
               {AVATAR_EMOJI[profile.avatar] ?? '⌨️'}
             </span>
             <div className="min-w-0">
@@ -86,7 +87,7 @@ export function Profile() {
                   }}
                   aria-pressed={profile.avatar === a}
                   className={cn(
-                    'flex size-10 items-center justify-center rounded-xl border-2 text-xl transition-transform hover:scale-105',
+                    'flex size-10 items-center justify-center rounded-[4px] border-2 text-xl transition-transform hover:scale-105',
                     profile.avatar === a ? 'border-primary bg-primary/10' : 'border-line bg-surface-2',
                   )}
                 >
@@ -97,15 +98,15 @@ export function Profile() {
           </div>
 
           {/* XP */}
-          <div className="mt-5 rounded-xl bg-surface-2/70 p-4">
+          <div className="mt-5 rounded-[4px] bg-surface-2/70 p-4">
             <div className="flex items-center justify-between text-xs font-semibold">
               <span className="text-ink">Level {level.level} progress</span>
               <span className="text-ink-muted">
                 {level.intoLevel}/{level.bandSize} XP
               </span>
             </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface">
-              <div className="h-full rounded-full bg-primary transition-[width] duration-700" style={{ width: `${level.progress}%` }} />
+            <div className="mt-2 h-1.5 overflow-hidden bg-surface">
+              <div className="h-full bg-primary transition-[width] duration-700" style={{ width: `${level.progress}%` }} />
             </div>
             <p className="mt-2 text-[11px] text-ink-muted">
               {level.toNext} XP until Level {level.level + 1} — {level.title}
@@ -113,7 +114,7 @@ export function Profile() {
           </div>
 
           {!isSupabaseConfigured && (
-            <div className="mt-4 flex items-center justify-between gap-2 rounded-xl border border-line p-3">
+            <div className="mt-4 flex items-center justify-between gap-2 rounded-[4px] border border-line p-3">
               <div>
                 <p className="text-xs font-bold text-ink">Sync your progress</p>
                 <p className="text-[11px] text-ink-muted">Connect an account to back up across devices.</p>
@@ -138,7 +139,7 @@ export function Profile() {
 
           <Card className="p-5">
             <div className="flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+              <h2 className="flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-ink uppercase">
                 <Award className="size-4 text-accent" aria-hidden />
                 Achievements
               </h2>
@@ -160,7 +161,7 @@ export function Profile() {
           </Card>
 
           <Card className="p-5">
-            <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+            <h2 className="flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-ink uppercase">
               <Zap className="size-4 text-primary" aria-hidden />
               Recent XP
             </h2>
