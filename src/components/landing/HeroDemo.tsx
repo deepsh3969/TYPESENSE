@@ -19,7 +19,9 @@ export function HeroDemo() {
   useEffect(() => {
     if (reduced) return
     const timer = window.setInterval(() => {
-      const engine = engineRef.current
+  const engine = engineRef.current
+  if (!engine) return null
+      if (!engine) return
       if (engine.finished) {
         engineRef.current = new TypingEngine({ text: nextPassage() })
         wrongNext.current = false

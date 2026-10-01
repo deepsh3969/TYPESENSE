@@ -82,7 +82,7 @@ export function buildAchievementContext(
 
 interface UserStore {
   data: UserState
-  setProfile: (patch: Partial<Pick<UserProfile, 'displayName' | 'avatar' | 'dailyGoalMinutes' | 'preferredDifficulty'>>) => void
+  setProfile: (patch: Partial<Pick<UserProfile, 'displayName' | 'avatar' | 'dailyGoalMinutes' | 'preferredDifficulty' | 'mode'>>) => void
   recordSession: (
     session: Pick<TypingSession, 'metrics' | 'source' | 'startedAt'>,
     extras?: Partial<AchievementContext>,

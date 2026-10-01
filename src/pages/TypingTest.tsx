@@ -11,6 +11,7 @@ import { useAnalytics } from '@/hooks/useAnalytics'
 import { useToasts, ToastStack } from '@/components/ui/Toast'
 import { useSessionsStore } from '@/stores/sessionsStore'
 import { useUserStore } from '@/stores/userStore'
+import { currentUserId, maybeSyncSession } from '@/services/sync'
 import { buildTextToLength, buildWordText, charsForDuration } from '@/typing/text'
 import { COMMON_WORDS } from '@/data/words'
 import { SENTENCES } from '@/data/passages'
@@ -73,7 +74,10 @@ export function TypingTest() {
 
   const handleFinish = useCallback(
     (session: TypingSession) => {
+      const uid = currentUserId()
+      if (uid) session.userId = uid
       addSession(session)
+      void maybeSyncSession(session)
       const outcome = recordSession(session)
       setResult({ session, outcome })
       push({

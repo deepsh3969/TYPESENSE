@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { KeyboardIcon, Mail, ShieldCheck } from 'lucide-react'
 import { Button, Card, Input, LinkButton } from '@/components/ui'
-import { getSupabase, isSupabaseConfigured } from '@/lib/supabase'
+import { getSupabase, googleAuthEnabled, isSupabaseConfigured } from '@/lib/supabase'
 
 export function AuthPage() {
   const [email, setEmail] = useState('')
@@ -23,6 +23,19 @@ export function AuthPage() {
       setError(err.message)
     } else {
       setStatus('sent')
+    }
+  }
+
+  const signInWithGoogle = async () => {
+    const sb = getSupabase()
+    if (!sb) return
+    const { error: err } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin },
+    })
+    if (err) {
+      setStatus('error')
+      setError(err.message)
     }
   }
 
@@ -95,6 +108,16 @@ export function AuthPage() {
                 <Button type="submit" loading={status === 'sending'} className="w-full">
                   <Mail className="size-4" /> Send magic link
                 </Button>
+                {googleAuthEnabled && (
+                  <>
+                    <div className="flex items-center gap-3 text-[11px] text-ink-faint">
+                      <span className="h-px flex-1 bg-line" /> or <span className="h-px flex-1 bg-line" />
+                    </div>
+                    <Button type="button" variant="outline" className="w-full" onClick={signInWithGoogle}>
+                      Continue with Google
+                    </Button>
+                  </>
+                )}
               </form>
             )}
 

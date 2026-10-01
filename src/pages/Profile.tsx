@@ -9,6 +9,7 @@ import { levelFromXp } from '@/gamification/levels'
 import { displayedStreak } from '@/gamification/streaks'
 import { ACHIEVEMENT_MAP } from '@/gamification/achievements'
 import { isSupabaseConfigured } from '@/lib/supabase'
+import { maybeSyncProfile } from '@/services/sync'
 import { cn, formatDuration } from '@/lib/utils'
 
 const AVATARS = ['keyboard', 'zap', 'target', 'rocket', 'brain', 'sparkles'] as const
@@ -54,7 +55,10 @@ export function Profile() {
                 aria-label="Display name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                onBlur={() => setProfile({ displayName: name.trim() || 'Typist' })}
+                onBlur={() => {
+                  setProfile({ displayName: name.trim() || 'Typist' })
+                  void maybeSyncProfile()
+                }}
                 onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
                 className="w-full rounded-lg border border-transparent bg-transparent px-1 py-0.5 text-lg font-extrabold text-ink transition-colors hover:border-line focus:border-primary focus:outline-none"
               />
@@ -76,7 +80,10 @@ export function Profile() {
                 <button
                   key={a}
                   type="button"
-                  onClick={() => setProfile({ avatar: a })}
+                  onClick={() => {
+                    setProfile({ avatar: a })
+                    void maybeSyncProfile()
+                  }}
                   aria-pressed={profile.avatar === a}
                   className={cn(
                     'flex size-10 items-center justify-center rounded-xl border-2 text-xl transition-transform hover:scale-105',

@@ -4,6 +4,9 @@ import { Flame, KeyboardIcon, Moon, Sun, UserRound, LogOut, Settings as Settings
 import { cn } from '@/lib/utils'
 import { useTheme } from '@/hooks/useTheme'
 import { useUserStore } from '@/stores/userStore'
+import { useAuthStore } from '@/stores/authStore'
+import { isSupabaseConfigured } from '@/lib/supabase'
+import { LinkButton } from '@/components/ui'
 import { displayedStreak, goalProgress } from '@/gamification/streaks'
 import { levelFromXp } from '@/gamification/levels'
 import { ProgressRing } from '@/components/ui'
@@ -25,6 +28,8 @@ export function TopBar() {
   const level = levelFromXp(data.profile.xp)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const authUser = useAuthStore((s) => s.user)
+  const signOut = useAuthStore((s) => s.signOut)
 
   useEffect(() => {
     if (!menuOpen) return
@@ -79,6 +84,32 @@ export function TopBar() {
             {Math.round(data.dailyGoal.minutes)}/{data.dailyGoal.goalMinutes}m
           </span>
         </Link>
+
+        {/* account */}
+        {isSupabaseConfigured &&
+          (authUser ? (
+            <div className="hidden items-center gap-1.5 sm:flex">
+              <span
+                className="max-w-44 truncate rounded-full border border-line bg-surface-2 px-3 py-1.5 text-xs font-semibold text-ink-muted"
+                title={authUser.email}
+              >
+                {authUser.email}
+              </span>
+              <button
+                type="button"
+                onClick={() => void signOut()}
+                className="flex size-9 items-center justify-center rounded-full border border-line bg-surface-2 text-ink-muted transition-colors hover:text-danger"
+                aria-label="Sign out"
+                title="Sign out"
+              >
+                <LogOut className="size-4" />
+              </button>
+            </div>
+          ) : (
+            <LinkButton to="/login" size="sm" variant="outline" className="hidden sm:inline-flex">
+              Sign in
+            </LinkButton>
+          ))}
 
         {/* theme */}
         <button

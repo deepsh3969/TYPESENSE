@@ -10,6 +10,7 @@ import { useToasts, ToastStack } from '@/components/ui/Toast'
 import { useSessionsStore } from '@/stores/sessionsStore'
 import { useUserStore, type SessionOutcome } from '@/stores/userStore'
 import { useProgressStore } from '@/stores/progressStore'
+import { currentUserId, maybeSyncLessonProgress, maybeSyncSession } from '@/services/sync'
 import { evaluateStage, getLesson, LESSONS, lessonStatus, type StageOutcome } from '@/lessons'
 import type { LessonResult } from '@/types/lesson'
 import type { TypingSession } from '@/types/typing'
@@ -54,7 +55,10 @@ export function LessonDetail() {
   const handleFinish = useCallback(
     (session: TypingSession) => {
       if (!lesson) return
+      const uid = currentUserId()
+      if (uid) session.userId = uid
       addSession(session)
+      void maybeSyncSession(session)
       const sessionOutcome = recordSession(session)
 
       const outcome = evaluateStage(lesson, stageIndex, session.metrics.accuracy, session.metrics.wpm)
@@ -80,27 +84,31 @@ export function LessonDetail() {
           improvement: first ? Math.round((session.metrics.accuracy - first.accuracy) * 10) / 10 : 0,
           passed: true,
         }
-        upsertLessonProgress({
+        const row = {
           lessonId: lesson.id,
-          status: 'completed',
+          status: 'completed' as const,
           attempts: (prev?.attempts ?? 0) + 1,
           bestAccuracy: Math.max(prev?.bestAccuracy ?? 0, session.metrics.accuracy),
           bestWpm: Math.max(prev?.bestWpm ?? 0, session.metrics.wpm),
           completedAt: now,
-        })
+        }
+        upsertLessonProgress(row)
+        void maybeSyncLessonProgress(row)
         const lessonOutcome = recordLesson(result)
         setLessonDone({ result, outcome: lessonOutcome })
         push({ icon: 'xp', title: `Lesson complete! +${lessonOutcome.xp} XP`, detail: lesson.title })
         for (const aid of lessonOutcome.unlocked) push({ icon: 'achievement', title: 'Achievement unlocked!', detail: aid })
       } else {
-        upsertLessonProgress({
+        const row = {
           lessonId: lesson.id,
-          status: 'in-progress',
+          status: 'in-progress' as const,
           attempts: (prev?.attempts ?? 0) + 1,
           bestAccuracy: Math.max(prev?.bestAccuracy ?? 0, session.metrics.accuracy),
           bestWpm: Math.max(prev?.bestWpm ?? 0, session.metrics.wpm),
           completedAt: prev?.completedAt ?? null,
-        })
+        }
+        upsertLessonProgress(row)
+        void maybeSyncLessonProgress(row)
         setStageOutcome(outcome)
       }
 

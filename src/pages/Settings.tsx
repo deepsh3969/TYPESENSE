@@ -7,6 +7,7 @@ import { useProgressStore } from '@/stores/progressStore'
 import { useUiStore, type ThemeMode } from '@/stores/uiStore'
 import { useTheme } from '@/hooks/useTheme'
 import { isSupabaseConfigured } from '@/lib/supabase'
+import { maybeSyncProfile } from '@/services/sync'
 
 export function Settings() {
   const profile = useUserStore((s) => s.data.profile)
@@ -25,6 +26,7 @@ export function Settings() {
     const n = Math.max(1, Math.min(240, Number(value) || 15))
     setGoal(String(n))
     setProfile({ dailyGoalMinutes: n })
+    void maybeSyncProfile()
   }
 
   return (
@@ -75,7 +77,10 @@ export function Settings() {
             <Select
               id="difficulty-select"
               value={String(profile.preferredDifficulty)}
-              onChange={(e) => setProfile({ preferredDifficulty: Number(e.target.value) as 1 | 2 | 3 | 4 | 5 })}
+              onChange={(e) => {
+                setProfile({ preferredDifficulty: Number(e.target.value) as 1 | 2 | 3 | 4 | 5 })
+                void maybeSyncProfile()
+              }}
             >
               <option value="1">1 — Gentle</option>
               <option value="2">2 — Easy</option>

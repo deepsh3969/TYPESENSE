@@ -26,6 +26,7 @@ import { useAnalytics } from '@/hooks/useAnalytics'
 import { useToasts, ToastStack } from '@/components/ui/Toast'
 import { useSessionsStore } from '@/stores/sessionsStore'
 import { useUserStore } from '@/stores/userStore'
+import { currentUserId, maybeSyncSession } from '@/services/sync'
 import { PRACTICE_MODES, PRACTICE_MODE_MAP, TIMED_PRACTICE } from '@/data/practiceModes'
 import { generatePracticeText, practiceFocusLabel } from '@/lessons/generators'
 import type { PracticeModeId } from '@/types/profile'
@@ -162,7 +163,10 @@ export function PracticeDetail() {
 
   const handleFinish = useCallback(
     (session: TypingSession) => {
+      const uid = currentUserId()
+      if (uid) session.userId = uid
       addSession(session)
+      void maybeSyncSession(session)
       const outcome = recordSession(session)
       setResult({ session, outcome })
       push({ icon: 'xp', title: `+${outcome.xp} XP`, detail: `${session.metrics.accuracy}% accuracy drill` })
