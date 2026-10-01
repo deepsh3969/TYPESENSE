@@ -2,6 +2,8 @@
 
 A production-quality typing-speed test and personalised typing-learning web app.
 
+**Live:** https://typesense-delta.vercel.app · **Repo:** https://github.com/deepsh3969/TYPESENSE
+
 **TYPE → ANALYZE → IDENTIFY WEAKNESSES → PRACTICE → RETEST → IMPROVE**
 
 Every finished session is analysed per keystroke: which keys fail, which letter
@@ -173,9 +175,17 @@ failures never block play).
 The app is a Vite SPA with client-side routing — [`vercel.json`](vercel.json)
 provides the rewrite to `index.html`.
 
+**Current production deployment:** https://typesense-delta.vercel.app
+
 1. Import the repo in Vercel (framework preset: **Vite**).
 2. Build command: `npm run build` · Output directory: `dist`.
 3. (Optional) add the Supabase env vars under *Project → Settings → Env Vars*.
+
+To redeploy from this machine:
+
+```bash
+vercel --prod
+```
 
 ## GitHub Setup
 
